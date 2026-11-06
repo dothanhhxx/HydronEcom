@@ -3,6 +3,7 @@ import { Be_Vietnam_Pro, Dancing_Script, Unbounded } from "next/font/google";
 import Analytics from "@/components/shell/Analytics";
 import StoreShell from "@/components/shell/StoreShell";
 import "./globals.css";
+import "./surfaces.css";
 
 const display = Unbounded({ subsets: ["latin", "vietnamese"], weight: ["500", "600", "700"], variable: "--font-display-face", display: "swap" });
 const body = Be_Vietnam_Pro({ subsets: ["latin", "vietnamese"], weight: ["400", "500", "600", "700", "800"], variable: "--font-body-face", display: "swap" });

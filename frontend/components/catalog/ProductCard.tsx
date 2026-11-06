@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import ProductVisual, { tintFor } from "@/components/bottle/ProductVisual";
 import { Badge, Button, Dialog, Icon, Price, QuantityStepper, Rating, WishButton, formatVND } from "@/components/ds";
@@ -52,6 +53,7 @@ export function QuickView({ product: p, initialColor, open, onClose }: { product
 
 export function ProductCard({ product: p, priority }: { product: Product; priority?: boolean }) {
   const { add, isWished, toggleWish } = useCart();
+  const router = useRouter();
   const [color, setColor] = useState(defaultColor(p));
   const [quick, setQuick] = useState(false);
   const badge = badgeOf(p);
@@ -59,6 +61,7 @@ export function ProductCard({ product: p, priority }: { product: Product; priori
   const href = `/san-pham/${p.slug}`;
   const size = p.sizes.length > 1 ? p.sizes[1] : defaultSize(p);
   const outAll = p.sizes.length ? p.sizes.every((s) => maxQtyOf(p, s, color) < 1) : maxQtyOf(p, "-", color) < 1;
+  const addFirst = () => add({ slug: p.slug, size: p.sizes.find((s) => maxQtyOf(p, s, color) > 0), color });
 
   return (
     <article className="hd-card" data-priority={priority ? "" : undefined}>
@@ -78,16 +81,6 @@ export function ProductCard({ product: p, priority }: { product: Product; priori
           <button type="button" className="hd-quick" onClick={() => setQuick(true)} aria-label={`Xem nhanh ${p.name}`}>
             <Icon name="eye" size={16} />
             <span className="hd-quick-text">Xem nhanh</span>
-          </button>
-          <button
-            type="button"
-            className="hd-quick hd-quick-icon"
-            disabled={outAll}
-            aria-label={`Thêm ${p.name} ${p.sizes.length ? defaultSize(p) + "ml " : ""}vào giỏ`}
-            title="Thêm nhanh vào giỏ"
-            onClick={() => add({ slug: p.slug, size: p.sizes.find((s) => maxQtyOf(p, s, color) > 0), color })}
-          >
-            <Icon name="plus" size={18} />
           </button>
         </div>
       </div>
@@ -112,10 +105,19 @@ export function ProductCard({ product: p, priority }: { product: Product; priori
             <>
               <span style={{ fontSize: 13, color: "var(--text-muted)" }}>từ</span>
               <Price value={lo} compareAt={compareAtOf(p)} />
-              <span style={{ fontSize: 13, color: "var(--text-subtle)" }}>– {formatVND(hi)}</span>
+              <span className="hd-card-price-hi" style={{ fontSize: 13, color: "var(--text-subtle)" }}>– {formatVND(hi)}</span>
             </>
           )}
         </div>
+      </div>
+      <div className="hd-card-actions">
+        <button type="button" className="hd-btn hd-btn-soft" disabled={outAll} onClick={addFirst} aria-label={`Thêm ${p.name} vào giỏ`}>
+          <Icon name="shopping-bag" size={16} />
+          {outAll ? "Tạm hết hàng" : "Thêm vào giỏ"}
+        </button>
+        <button type="button" className="hd-btn hd-btn-primary" disabled={outAll} onClick={() => addFirst() && router.push("/thanh-toan")}>
+          Mua ngay
+        </button>
       </div>
       {quick && <QuickView product={p} initialColor={color} open={quick} onClose={() => setQuick(false)} />}
     </article>

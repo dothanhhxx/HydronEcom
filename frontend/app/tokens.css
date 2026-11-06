@@ -147,8 +147,8 @@
 
   /* ---- Khoảng cách, bo góc, bóng, chuyển động ---- */
   --gutter-mobile: 16px;
-  --gutter-desktop: 40px;
-  --content-max: 1240px;
+  --gutter-desktop: clamp(24px, 4vw, 64px);
+  --content-max: 1440px;
   --reading-max: 680px;
 
   --radius-xs: 4px;

@@ -7,6 +7,7 @@ import { Button, Icon } from "@/components/ds";
 import { CATEGORIES, getCategory, priceRange, type Product } from "@/lib/products";
 import { fold } from "@/lib/text";
 import { ProductGridList } from "./ProductCard";
+import { Breadcrumbs } from "@/components/shell/PageHeader";
 
 const PRICES = [
   { value: "duoi-100", label: "Dưới 100.000₫", min: 0, max: 99999 },
@@ -133,13 +134,20 @@ export default function ProductGrid({ initialProducts }: { initialProducts: Prod
   const clearAll = () => setParams((u) => ["danh-muc", "dung-tich", "mau", "gia", "q"].forEach((k) => u.delete(k)));
 
   return (
-    <div className="lt-container">
-      <div className="hd-catalog-head">
-        <div>
-          <h1>{title}</h1>
-          <p style={{ marginTop: 10, color: "var(--text-muted)", maxWidth: 560 }}>{desc}</p>
+    <>
+    <div className="hd-page-head hd-catalog-band">
+      <div className="lt-container">
+        <Breadcrumbs crumbs={[{ label: "Sản phẩm" }]} />
+        <div className="hd-catalog-head">
+          <div>
+            <h1>{title}</h1>
+            <p style={{ marginTop: 14, color: "var(--text-body)", maxWidth: 560, fontSize: 16.5, lineHeight: 1.65 }}>{desc}</p>
+          </div>
         </div>
       </div>
+    </div>
+    <div className="hd-catalog-body">
+    <div className="lt-container">
       <div className="hd-toolbar">
         <div className="hd-tabs" role="group" aria-label="Loại sản phẩm" style={{ flex: "0 1 auto", minWidth: 0 }}>
           <button type="button" className="hd-tab" aria-pressed={!cat.length} onClick={() => setParams((u) => u.delete("danh-muc"))}>Tất cả</button>
@@ -215,5 +223,7 @@ export default function ProductGrid({ initialProducts }: { initialProducts: Prod
         </div>
       )}
     </div>
+    </div>
+    </>
   );
 }

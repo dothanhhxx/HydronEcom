@@ -18,8 +18,9 @@ export function Breadcrumbs({ crumbs }: { crumbs: Crumb[] }) {
   );
 }
 
-/** Đầu trang thông tin: nền kem, tiêu đề lớn. `plain` dùng cho trang giao dịch (giỏ, đặt hàng). */
-export function PageHeader({ title, desc, crumbs = [], plain }: { title: string; eyebrow?: string; desc?: ReactNode; crumbs?: Crumb[]; plain?: boolean }) {
+/** Đầu trang thông tin: dải kem tràn viền có họa tiết nước, tiêu đề lớn, `art` (tuỳ chọn) đặt bên phải.
+ *  `plain` dùng cho trang giao dịch (giỏ, đặt hàng). */
+export function PageHeader({ title, desc, crumbs = [], plain, art }: { title: string; eyebrow?: string; desc?: ReactNode; crumbs?: Crumb[]; plain?: boolean; art?: ReactNode }) {
   if (plain)
     return (
       <div className="lt-container" style={{ paddingTop: 20, paddingBottom: 24 }}>
@@ -30,10 +31,17 @@ export function PageHeader({ title, desc, crumbs = [], plain }: { title: string;
     );
   return (
     <div className="hd-page-head">
-      <div className="lt-container hd-page-head-inner">
-        <Breadcrumbs crumbs={crumbs} />
-        <h1>{title}</h1>
-        {desc && <p>{desc}</p>}
+      <div className="lt-container hd-page-head-inner" data-art={art ? "" : undefined}>
+        <div>
+          <Breadcrumbs crumbs={crumbs} />
+          <h1>{title}</h1>
+          {desc && <p>{desc}</p>}
+        </div>
+        {art && (
+          <div className="hd-page-head-art" aria-hidden>
+            {art}
+          </div>
+        )}
       </div>
     </div>
   );
