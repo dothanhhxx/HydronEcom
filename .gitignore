@@ -1,0 +1,26 @@
+# Dependencies & build
+node_modules/
+.next/
+out/
+dist/
+*.tsbuildinfo
+
+# Env
+.env
+.env*.local
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dữ liệu khách hàng & ảnh tải lên (đã lưu trên Supabase) và bản sao lưu: không đưa lên git
+backend/data/
+backend/uploads/
+backend/backups/

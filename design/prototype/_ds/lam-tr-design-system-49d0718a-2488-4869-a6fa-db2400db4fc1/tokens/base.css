@@ -1,0 +1,9 @@
+/* Minimal element defaults so cards and kits render on-brand */
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg-page);color:var(--text-body);font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{color:var(--text-strong);margin:0;text-wrap:balance}h1,h2{font-family:var(--font-display);font-weight:var(--fw-display);letter-spacing:var(--ls-display);line-height:var(--lh-h1)}h3,h4{font-family:var(--font-title);font-weight:var(--fw-medium);line-height:var(--lh-h3)}
+p{margin:0;text-wrap:pretty}
+a{color:var(--text-link);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+a:hover{color:var(--primary-hover)}
+button{font-family:inherit}
+::selection{background:var(--accent-soft)}

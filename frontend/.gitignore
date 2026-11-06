@@ -1,0 +1,9 @@
+node_modules
+.next
+next-env.d.ts
+*.tsbuildinfo
+
+# Đơn hàng, tin nhắn lưu tạm (chứa dữ liệu khách)
+.data/
+.env*.local
+.env

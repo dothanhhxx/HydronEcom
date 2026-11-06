@@ -1,0 +1,41 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# CẤU HÌNH DEPLOY RENDER (RENDER BLUEPRINT) - LAM TRÀ E-COMMERCE
+# ═══════════════════════════════════════════════════════════════════════════
+# Tài liệu chính thức: https://render.com/docs/blueprint-spec
+#
+# Cách sử dụng:
+# 1. Đẩy code lên GitHub: git push origin main
+# 2. Truy cập dashboard Render (https://dashboard.render.com)
+# 3. Chọn "New +" -> "Blueprint" -> Chọn repo LamTraE-Com
+# 4. Render sẽ tự động đọc file render.yaml này và khởi tạo dịch vụ.
+# ═══════════════════════════════════════════════════════════════════════════
+
+services:
+  # ─── PHƯƠNG ÁN TỐI ƯU FREE TIER: ALL-IN-ONE (FRONTEND + BACKEND) ───
+  # Chạy đồng thời Next.js SSR (cổng công khai Render cấp) và Fastify API
+  # (cổng nội bộ 4000) trên CÙNG 1 container miễn phí.
+  # Lợi ích:
+  #  - Không vượt quá giới hạn 750 giờ/tháng của Free Tier
+  #  - Tránh bị độ trễ khởi động lạnh (Cold-start) chéo giữa 2 service
+  #  - Ảnh tải lên và dữ liệu JSON lưu đồng nhất trên cùng hệ thống tệp
+  - type: web
+    name: lam-tra-ecom
+    runtime: node
+    plan: free
+    region: singapore # Vùng Singapore cho độ trễ thấp nhất từ Việt Nam (~35ms)
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Bí mật: nhập trên Render Dashboard → Environment (sync: false = không lưu trong repo)
+      - key: ADMIN_SECRET_KEY
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: BACKEND_INTERNAL_PORT
+        value: "4000"
+      - key: CORS_ORIGIN
+        value: "http://localhost:3000"

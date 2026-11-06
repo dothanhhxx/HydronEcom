@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ext-resource-dependency" content="assets/photos/sen.jpg" data-resource-id="ph-sen" />
+<meta name="ext-resource-dependency" content="assets/photos/moccau.jpg" data-resource-id="ph-moccau" />
+<meta name="ext-resource-dependency" content="assets/photos/nontom.jpg" data-resource-id="ph-nontom" />
+<meta name="ext-resource-dependency" content="assets/photos/dinhth.jpg" data-resource-id="ph-dinhth" />
+<meta name="ext-resource-dependency" content="assets/photos/hopqua.jpg" data-resource-id="ph-hopqua" />
+<script src="./support.js"></script>
+</head>
+<body>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" data-bg-color="#24341F"><rect width="100" height="100" fill="#24341F"/><path d="M50 30c-10 8-14 20-10 32 4-6 10-10 18-12-6 4-10 9-12 16 12-2 18-14 14-26-2-4-5-7-10-10z" fill="#BC9A6C"/></svg></template>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/lam-tr-design-system-49d0718a-2488-4869-a6fa-db2400db4fc1/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/lam-tr-design-system-49d0718a-2488-4869-a6fa-db2400db4fc1/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/lam-tr-design-system-49d0718a-2488-4869-a6fa-db2400db4fc1/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/lam-tr-design-system-49d0718a-2488-4869-a6fa-db2400db4fc1/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/lam-tr-design-system-49d0718a-2488-4869-a6fa-db2400db4fc1/tokens/base.css">
+  <link rel="stylesheet" href="_ds/lam-tr-design-system-49d0718a-2488-4869-a6fa-db2400db4fc1/styles.css">
+  <script src="_ds/lam-tr-design-system-49d0718a-2488-4869-a6fa-db2400db4fc1/_ds_bundle.js"></script>
+  <style>
+    html,body{margin:0;background:var(--bg-page);}
+    a{color:var(--text-link);}
+    a:hover{color:var(--primary-hover);}
+    @media (prefers-reduced-motion: reduce){*{transition-duration:.01ms !important;}}
+  </style>
+</helmet>
+
+<div style="min-height:100vh;background:var(--bg-page);color:var(--text-body);font-family:var(--font-ui, Roboto, Arial, sans-serif);">
+
+  <header data-screen-label="Header" style="position:fixed;top:0;left:0;right:0;z-index:30;background:{{ headerBg }};backdrop-filter:{{ headerBlur }};-webkit-backdrop-filter:{{ headerBlur }};border-bottom:1px solid {{ headerBorder }};transition:background 200ms cubic-bezier(.2,.7,.2,1),border-color 200ms;">
+    <div style="max-width:1240px;margin:0 auto;height:68px;padding:0 clamp(12px,3vw,40px);display:flex;align-items:center;gap:24px;">
+      <a href="#" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:{{ headerInk }};flex-shrink:0;">
+        <span style="width:42px;height:42px;border-radius:6px;background:var(--logo-green);border:1px solid rgba(188,154,108,.5);display:flex;align-items:center;justify-content:center;">
+          <img src="assets/lam-tra-emblem.svg" alt="Lam Trà" style="height:30px;"></img>
+        </span>
+        <span style="display:flex;flex-direction:column;line-height:1.15;">
+          <span style="font-size:17px;font-weight:500;letter-spacing:-.01em;">Lam Trà</span>
+          <span style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:{{ headerAccent }};">Tea &amp; beyond</span>
+        </span>
+      </a>
+      <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+        <nav style="display:flex;gap:30px;flex:1;justify-content:center;">
+          <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="5">
+            <a href="#" onClick="{{ n.onClick }}" style="font-size:14px;color:{{ headerInk }};text-decoration:none;padding:6px 0;" style-hover="text-decoration:underline;text-underline-offset:3px;">{{ n.label }}</a>
+          </sc-for>
+        </nav>
+      </sc-if>
+      <div style="display:flex;align-items:center;gap:2px;margin-left:auto;color:{{ headerInk }};">
+        <button type="button" aria-label="Tìm kiếm" style="width:44px;height:44px;border:0;border-radius:999px;background:transparent;color:inherit;display:flex;align-items:center;justify-content:center;cursor:pointer;" style-hover="background:rgba(188,154,108,.16);">
+          <x-import component-from-global-scope="LamTrDesignSystem_49d071.Icon" name="search" size="{{ 22 }}" hint-size="22px,22px"></x-import>
+        </button>
+        <button type="button" aria-label="Giỏ hàng" style="position:relative;width:44px;height:44px;border:0;border-radius:999px;background:transparent;color:inherit;display:flex;align-items:center;justify-content:center;cursor:pointer;" style-hover="background:rgba(188,154,108,.16);">
+          <x-import component-from-global-scope="LamTrDesignSystem_49d071.Icon" name="shopping-bag" size="{{ 22 }}" hint-size="22px,22px"></x-import>
+          <sc-if value="{{ hasCart }}" hint-placeholder-val="{{ false }}">
+            <span style="position:absolute;top:5px;right:4px;min-width:17px;height:17px;padding:0 4px;box-sizing:border-box;border-radius:999px;background:var(--tra-400);color:var(--logo-green);font-size:10.5px;font-weight:700;display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums;">{{ cart }}</span>
+          </sc-if>
+        </button>
+        <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+          <x-import component-from-global-scope="LamTrDesignSystem_49d071.Button" variant="accent" size="sm" icon-right="arrow-right" on-click="{{ shopNow }}" style="margin-left:10px;" hint-size="120px,36px">Mua ngay</x-import>
+        </sc-if>
+        <sc-if value="{{ isMobileNav }}" hint-placeholder-val="{{ false }}">
+          <button type="button" aria-label="Danh mục" onClick="{{ toggleMenu }}" style="width:44px;height:44px;border:0;border-radius:999px;background:transparent;color:inherit;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+            <x-import component-from-global-scope="LamTrDesignSystem_49d071.Icon" name="{{ menuIcon }}" size="{{ 22 }}" hint-size="22px,22px"></x-import>
+          </button>
+        </sc-if>
+      </div>
+    </div>
+    <sc-if value="{{ menuVisible }}" hint-placeholder-val="{{ false }}">
+      <nav style="display:flex;flex-direction:column;padding:4px 20px 20px;background:var(--bg-page);border-top:1px solid var(--border-hairline);">
+        <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="5">
+          <a href="#" onClick="{{ n.onClick }}" style="font-size:16px;color:var(--text-strong);text-decoration:none;padding:15px 0;border-bottom:1px solid var(--border-hairline);">{{ n.label }}</a>
+        </sc-for>
+        <x-import component-from-global-scope="LamTrDesignSystem_49d071.Button" size="lg" full-width="{{ true }}" on-click="{{ shopNow }}" style="margin-top:16px;" hint-size="100%,52px">Mua ngay</x-import>
+      </nav>
+    </sc-if>
+  </header>
+
+  <section data-screen-label="01 Hero" style="position:relative;overflow:hidden;background:var(--reu-900);min-height:{{ heroMinH }};display:flex;align-items:{{ heroAlign }};">
+    <div style="position:absolute;inset:0;background-image:url('assets/photos/hero.jpg');background-size:cover;background-position:{{ heroPos }};transform:scale({{ heroScale }});transition:transform 1600ms cubic-bezier(.2,.7,.2,1);"></div>
+    <div style="position:absolute;inset:0;background:{{ heroScrim }};"></div>
+    <div style="position:relative;width:100%;max-width:1240px;margin:0 auto;padding:{{ heroPad }};box-sizing:border-box;">
+      <div style="max-width:600px;opacity:{{ inOpacity }};transform:translateY({{ inShift }});transition:opacity 600ms cubic-bezier(.2,.7,.2,1),transform 600ms cubic-bezier(.2,.7,.2,1);">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px;">
+          <span style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:500;color:var(--tra-300);white-space:nowrap;flex-shrink:0;">Tân Cương · Thái Nguyên</span>
+          <span style="flex:0 0 64px;height:1px;background:var(--tra-400);opacity:.7;"></span>
+        </div>
+        <h1 style="margin:0;font-size:clamp(38px,6.2vw,76px);line-height:1.12;font-weight:500;letter-spacing:-.02em;color:var(--logo-cream);text-wrap:balance;">Trọn vị trà Việt,<br><span style="color:var(--tra-300);">trọn tấm lòng trao gửi.</span></h1>
+        <p style="margin:24px 0 0;max-width:500px;font-size:clamp(16px,1.5vw,18px);line-height:1.65;color:var(--reu-100);text-wrap:pretty;">Búp chè Tân Cương hái sáng sớm, sao tay trên chảo gang. Mỗi gói trà ghi rõ khối lượng và phân hạng, để bạn chọn đúng vị cho mình hay cho người thân.</p>
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px 28px;margin-top:34px;">
+          <x-import component-from-global-scope="LamTrDesignSystem_49d071.Button" variant="accent" size="lg" icon-right="arrow-right" on-click="{{ shopNow }}" hint-size="160px,52px">Mua ngay</x-import>
+          <a href="#" onClick="{{ showGift }}" style="display:flex;align-items:center;gap:8px;font-size:15px;font-weight:500;color:var(--logo-cream);text-decoration:underline;text-underline-offset:4px;text-decoration-color:rgba(253,237,216,.4);" style-hover="text-decoration-color:var(--logo-cream);color:var(--logo-cream);">
+            <x-import component-from-global-scope="LamTrDesignSystem_49d071.Icon" name="gift" size="{{ 18 }}" hint-size="18px,18px"></x-import>Xem hộp quà biếu
+          </a>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:16px 0;margin-top:48px;">
+          <sc-for list="{{ trust }}" as="t" hint-placeholder-count="3">
+            <div style="display:flex;align-items:center;gap:12px;padding-right:22px;margin-right:22px;border-right:{{ t.divider }};">
+              <span style="width:40px;height:40px;flex-shrink:0;border-radius:999px;border:1px solid rgba(188,154,108,.6);color:var(--tra-300);display:flex;align-items:center;justify-content:center;">
+                <x-import component-from-global-scope="LamTrDesignSystem_49d071.Icon" name="{{ t.icon }}" size="{{ 18 }}" hint-size="18px,18px"></x-import>
+              </span>
+              <span style="font-size:13px;line-height:1.4;color:var(--logo-cream);">{{ t.a }}<br><span style="color:var(--reu-200);">{{ t.b }}</span></span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section data-screen-label="01b Product stage" ref="{{ stageRef }}" style="position:relative;z-index:2;padding:0 clamp(12px,3vw,40px) clamp(48px,7vw,96px);margin-top:{{ stageLift }};">
+    <div style="max-width:1200px;margin:0 auto;background:var(--surface-card);border:1px solid var(--border-hairline);border-radius:10px;box-shadow:var(--shadow-lg);overflow:hidden;display:flex;flex-wrap:wrap;">
+
+      <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:0 0 232px;padding:20px 14px;background:var(--logo-green);display:flex;flex-direction:column;gap:6px;">
+          <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--tra-300);padding:4px 10px 12px;">Trà nổi bật</div>
+          <sc-for list="{{ teaList }}" as="it" hint-placeholder-count="5">
+            <button type="button" onClick="{{ it.onPick }}" style="display:flex;align-items:center;gap:12px;padding:8px 10px;border-radius:6px;border:1px solid {{ it.border }};background:{{ it.bg }};color:var(--logo-cream);text-align:left;cursor:pointer;font-family:inherit;transition:background 200ms,border-color 200ms;" style-hover="background:rgba(253,237,216,.06);">
+              <span style="width:44px;height:44px;flex-shrink:0;border-radius:4px;background-image:url('{{ it.thumb }}');background-size:cover;background-position:center;"></span>
+              <span style="display:flex;flex-direction:column;gap:2px;min-width:0;">
+                <span style="font-size:11px;color:var(--tra-300);font-variant-numeric:tabular-nums;">{{ it.num }}</span>
+                <span style="font-size:14px;font-weight:500;line-height:1.25;">{{ it.name }}</span>
+              </span>
+            </button>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isMobileNav }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1 1 100%;display:flex;gap:8px;overflow-x:auto;padding:12px;background:var(--logo-green);scrollbar-width:none;">
+          <sc-for list="{{ teaList }}" as="it" hint-placeholder-count="5">
+            <button type="button" onClick="{{ it.onPick }}" style="flex-shrink:0;display:flex;align-items:center;gap:8px;height:44px;padding:0 14px 0 6px;border-radius:999px;border:1px solid {{ it.border }};background:{{ it.bg }};color:var(--logo-cream);font-family:inherit;font-size:13px;font-weight:500;white-space:nowrap;cursor:pointer;">
+              <span style="width:32px;height:32px;border-radius:999px;background-image:url('{{ it.thumb }}');background-size:cover;background-position:center;"></span>{{ it.name }}
+            </button>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <div style="flex:999 1 420px;min-width:0;padding:clamp(12px,1.6vw,20px);display:flex;">
+        <div style="position:relative;flex:1;align-self:flex-start;opacity:{{ photoOpacity }};transition:opacity 200ms cubic-bezier(.2,.7,.2,1);">
+          <x-import component-from-global-scope="LamTrDesignSystem_49d071.ProductImage" src="{{ tea.img }}" alt="{{ tea.name }}" ratio="{{ photoRatio }}" radius="6px" hint-size="100%,440px"></x-import>
+          <span style="position:absolute;left:14px;top:14px;padding:6px 12px;border-radius:999px;background:rgba(252,248,241,.88);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);font-size:12px;color:var(--text-strong);white-space:nowrap;">{{ tea.origin }}</span>
+          <div style="position:absolute;right:14px;bottom:14px;display:flex;gap:8px;">
+            <x-import component-from-global-scope="LamTrDesignSystem_49d071.IconButton" icon="chevron-left" label="Trà trước" variant="surface" on-click="{{ prevTea }}" hint-size="44px,44px"></x-import>
+            <x-import component-from-global-scope="LamTrDesignSystem_49d071.IconButton" icon="chevron-right" label="Trà tiếp theo" variant="surface" on-click="{{ nextTea }}" hint-size="44px,44px"></x-import>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex:1 1 320px;min-width:0;padding:clamp(20px,2.4vw,32px) clamp(20px,2.4vw,32px) clamp(20px,2.4vw,28px) clamp(20px,1vw,12px);display:flex;flex-direction:column;gap:18px;">
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:500;color:var(--accent);font-variant-numeric:tabular-nums;">{{ counter }} · {{ tea.kind }}</div>
+          <h2 style="margin:0;font-size:clamp(26px,2.6vw,34px);line-height:1.2;font-weight:500;letter-spacing:-.01em;color:var(--text-strong);">{{ tea.name }}</h2>
+          <div style="font-size:15px;color:var(--tra-500);">{{ tea.note }}</div>
+          <x-import component-from-global-scope="LamTrDesignSystem_49d071.Rating" value="{{ tea.rating }}" count="{{ tea.reviews }}" hint-size="120px,18px"></x-import>
+        </div>
+        <p style="margin:0;font-size:15px;line-height:1.6;color:var(--text-body);text-wrap:pretty;">{{ tea.desc }}</p>
+        <sc-if value="{{ hasVariants }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <x-import component-from-global-scope="LamTrDesignSystem_49d071.OptionPicker" label="Khối lượng" options="{{ sizeOptions }}" value="{{ size }}" on-change="{{ pickSize }}" hint-size="100%,72px"></x-import>
+            <x-import component-from-global-scope="LamTrDesignSystem_49d071.OptionPicker" label="Phân hạng" options="{{ gradeOptions }}" value="{{ grade }}" on-change="{{ pickGrade }}" hint-size="100%,72px"></x-import>
+          </div>
+        </sc-if>
+        <sc-if value="{{ isSet }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:14px 16px;border:1px solid var(--border-hairline);border-radius:6px;background:var(--bg-page);font-size:13px;line-height:1.55;color:var(--text-body);">Bộ quà gói sẵn trong hộp sơn mài. Bạn ghi lời nhắn ở bước đặt hàng, Lam Trà sẽ viết tay vào thiệp.</div>
+        </sc-if>
+        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding-top:16px;border-top:1px solid var(--border-hairline);margin-top:auto;">
+          <x-import component-from-global-scope="LamTrDesignSystem_49d071.Price" value="{{ price }}" size="lg" hint-size="120px,28px"></x-import>
+          <span style="font-size:13px;color:var(--text-muted);">{{ variantLabel }}</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;">
+          <div style="flex:1 1 150px;min-width:0;">
+            <x-import component-from-global-scope="LamTrDesignSystem_49d071.Button" variant="secondary" size="lg" full-width="{{ true }}" icon-left="{{ addIcon }}" on-click="{{ addToCart }}" hint-size="100%,52px">{{ addLabel }}</x-import>
+          </div>
+          <div style="flex:1 1 150px;min-width:0;">
+            <x-import component-from-global-scope="LamTrDesignSystem_49d071.Button" size="lg" full-width="{{ true }}" icon-right="arrow-right" on-click="{{ buyNow }}" hint-size="100%,52px">Mua ngay</x-import>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted);">Thanh toán VietQR hoặc COD · Lam Trà xác nhận qua Zalo trong 30 phút</div>
+      </div>
+    </div>
+  </section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const U = (k) => (window.__resources && window.__resources['ph-' + k]) || ('assets/photos/' + k + '.jpg');
+const TEAS = [
+  { id: 'dinh-sen', name: 'Trà Đinh Sen', kind: 'Trà sen', note: 'Hương sen dịu, hậu ngọt kéo dài', base: 320000, rating: 4.9, reviews: 88, origin: 'Tân Cương · Thái Nguyên', ph: 'sen',
+    desc: 'Búp Đinh non ướp cùng gạo sen Tây Hồ theo lối xưa, mỗi cân trà cần hơn nghìn bông sen. Nước vàng sánh, thơm thanh, hợp tiếp khách và biếu tặng.' },
+  { id: 'moc-cau', name: 'Trà Móc Câu', kind: 'Trà xanh', note: 'Hương cốm non, chát dịu', base: 150000, rating: 4.7, reviews: 142, origin: 'Tân Cương · Thái Nguyên', ph: 'moccau',
+    desc: 'Cánh trà xoăn nhỏ như móc câu, sao tay trên chảo gang. Nước xanh vàng, vị chát dịu rồi ngọt, hợp uống hằng ngày.' },
+  { id: 'non-tom', name: 'Trà Nõn Tôm', kind: 'Trà xanh', note: 'Nước xanh trong, vị thanh', base: 220000, rating: 4.8, reviews: 64, origin: 'Tân Cương · Thái Nguyên', ph: 'nontom',
+    desc: 'Chỉ hái một tôm một lá vào sáng sớm. Cánh trà nhỏ, đều, nước xanh trong và hậu ngọt rõ.' },
+  { id: 'dinh-th', name: 'Đinh Thượng Hạng', kind: 'Thượng hạng', note: 'Búp nhỏ nhất, vị sâu', base: 480000, rating: 5.0, reviews: 31, origin: 'Đồi chè Tân Cương', ph: 'dinhth',
+    desc: 'Phần búp nhỏ nhất của cây chè, cánh nhọn như đinh. Dành cho người sành trà và những dịp đặc biệt.' },
+  { id: 'hop-qua', name: 'Hộp quà Trao Gửi', kind: 'Quà tặng', note: 'Gói sẵn, kèm thiệp viết tay', base: 650000, fixed: true, rating: 4.9, reviews: 53, origin: 'Bộ quà tặng', ph: 'hopqua',
+    desc: 'Đinh Sen 150g, Nõn Tôm 150g và kẹo lạc trà xanh trong hộp sơn mài. Miễn phí gói quà cho đơn từ 500.000₫.' },
+];
+const SIZE = { '150': 1, '300': 1.9, '500': 3 };
+const GRADE = { '1': 1, '2': 0.75 };
+
+class Component extends DCLogic {
+  state = { idx: 0, size: '150', grade: '1', cart: 0, added: false, fading: false, menu: false, scrolled: false, loaded: false, w: typeof window !== 'undefined' ? window.innerWidth : 1280 };
+  stageRef = React.createRef();
+  componentDidMount() {
+    this.onResize = () => this.setState({ w: window.innerWidth });
+    this.onScroll = () => { const s = window.scrollY > 24; if (s !== this.state.scrolled) this.setState({ scrolled: s }); };
+    window.addEventListener('resize', this.onResize);
+    window.addEventListener('scroll', this.onScroll, { passive: true });
+    this.t0 = setTimeout(() => this.setState({ loaded: true }), 60);
+    TEAS.forEach((t) => { const i = new Image(); i.src = U(t.ph); });
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.onResize); window.removeEventListener('scroll', this.onScroll);
+    [this.t0, this.t1, this.t2].forEach(clearTimeout);
+  }
+  scrollToStage() {
+    const el = this.stageRef.current; if (!el) return;
+    window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 84, behavior: 'smooth' });
+  }
+  pick = (i) => {
+    const n = (i + TEAS.length) % TEAS.length;
+    if (n === this.state.idx) return;
+    clearTimeout(this.t1);
+    this.setState({ fading: true, added: false });
+    this.t1 = setTimeout(() => this.setState({ idx: n, fading: false }), 160);
+  };
+  renderVals() {
+    const { idx, size, grade, cart, added, fading, menu, scrolled, loaded, w } = this.state;
+    const tea = { ...TEAS[idx], img: U(TEAS[idx].ph) };
+    const isDesktop = w >= 1000;
+    const mobile = w < 720;
+    const solid = scrolled || menu;
+    const go = (i) => (e) => { e && e.preventDefault(); this.setState({ menu: false }); if (i != null) this.pick(i); this.scrollToStage(); };
+    return {
+      isDesktop, isMobileNav: !isDesktop, menuVisible: !isDesktop && menu,
+      menuIcon: menu ? 'x' : 'menu',
+      toggleMenu: () => this.setState((s) => ({ menu: !s.menu })),
+      headerBg: solid ? 'rgba(247,240,227,.94)' : 'transparent',
+      headerBlur: solid ? 'blur(10px)' : 'none',
+      headerBorder: solid ? 'var(--border-hairline)' : 'transparent',
+      headerInk: solid ? 'var(--text-strong)' : 'var(--logo-cream)',
+      headerAccent: solid ? 'var(--tra-500)' : 'var(--tra-300)',
+      navItems: [
+        { label: 'Trà xanh', onClick: go(1) },
+        { label: 'Trà sen', onClick: go(0) },
+        { label: 'Thượng hạng', onClick: go(3) },
+        { label: 'Quà tặng', onClick: go(4) },
+        { label: 'Câu chuyện', onClick: (e) => e.preventDefault() },
+      ],
+      cart, hasCart: cart > 0,
+      shopNow: go(null),
+      showGift: go(4),
+      heroMinH: mobile ? '760px' : 'min(940px, 100vh)',
+      heroAlign: mobile ? 'flex-end' : 'center',
+      heroPos: mobile ? '30% center' : 'center',
+      heroPad: mobile ? '120px 20px 150px' : '140px clamp(24px,3vw,40px) 220px',
+      heroScrim: mobile
+        ? 'linear-gradient(0deg, rgba(25,36,26,.96) 0%, rgba(36,52,31,.82) 50%, rgba(36,52,31,.35) 100%)'
+        : 'linear-gradient(90deg, rgba(25,36,26,.94) 0%, rgba(36,52,31,.82) 38%, rgba(36,52,31,.25) 72%, rgba(36,52,31,.1) 100%), linear-gradient(0deg, rgba(25,36,26,.6) 0%, transparent 30%)',
+      heroScale: loaded ? 1 : 1.04,
+      inOpacity: loaded ? 1 : 0,
+      inShift: loaded ? '0px' : '8px',
+      trust: [
+        { icon: 'leaf', a: 'Búp chè Tân Cương', b: 'hái tay sáng sớm', divider: '1px solid rgba(188,154,108,.3)' },
+        { icon: 'scale', a: 'Rõ khối lượng', b: 'và phân hạng', divider: mobile ? '0' : '1px solid rgba(188,154,108,.3)' },
+        { icon: 'qr-code', a: 'Thanh toán VietQR', b: 'hoặc COD', divider: '0' },
+      ],
+      stageLift: mobile ? '-96px' : '-150px',
+      stageRef: this.stageRef,
+      teaList: TEAS.map((t, i) => ({
+        name: t.name, num: String(i + 1).padStart(2, '0'), thumb: U(t.ph),
+        bg: i === idx ? 'rgba(188,154,108,.16)' : 'transparent',
+        border: i === idx ? 'rgba(188,154,108,.7)' : 'rgba(253,237,216,.1)',
+        onPick: () => this.pick(i),
+      })),
+      tea, counter: String(idx + 1).padStart(2, '0') + ' / ' + String(TEAS.length).padStart(2, '0'),
+      prevTea: () => this.pick(idx - 1), nextTea: () => this.pick(idx + 1),
+      photoOpacity: fading ? 0 : 1,
+      photoRatio: mobile ? '4 / 5' : '4 / 5',
+      hasVariants: !tea.fixed, isSet: !!tea.fixed,
+      size, grade,
+      sizeOptions: ['150', '300', '500'].map((s) => ({ value: s, label: s + 'g' })),
+      gradeOptions: [{ value: '1', label: 'Hạng 1', sub: 'Hương đậm' }, { value: '2', label: 'Hạng 2', sub: 'Hằng ngày' }],
+      pickSize: (v) => this.setState({ size: v, added: false }),
+      pickGrade: (v) => this.setState({ grade: v, added: false }),
+      price: tea.fixed ? tea.base : Math.round((tea.base * SIZE[size] * GRADE[grade]) / 1000) * 1000,
+      variantLabel: tea.fixed ? 'Hộp 3 món' : size + 'g · Hạng ' + grade,
+      addLabel: added ? 'Đã thêm' : 'Thêm vào giỏ',
+      addIcon: added ? 'check' : 'shopping-bag',
+      addToCart: () => {
+        clearTimeout(this.t2);
+        this.setState((s) => ({ cart: s.cart + 1, added: true }));
+        this.t2 = setTimeout(() => this.setState({ added: false }), 2200);
+      },
+      buyNow: () => this.setState((s) => ({ cart: s.cart + 1, added: true })),
+    };
+  }
+}
+</script>
+</body>
+</html>

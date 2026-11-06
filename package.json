@@ -1,0 +1,21 @@
+{
+  "name": "lam-tra-ecom",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev": "concurrently -n \"backend,frontend\" -c \"green,cyan\" \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "build:backend": "npm --prefix backend run build",
+    "build:frontend": "npm --prefix frontend run build",
+    "build": "npm run build:backend && npm run build:frontend",
+    "start": "node tools/render-start.mjs"
+  },
+  "dependencies": {
+    "concurrently": "^9.2.5"
+  }
+}

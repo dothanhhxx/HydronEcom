@@ -1,0 +1,29 @@
+/* Lam Trà — type tokens. One family: Roboto (fallback Arial), full Vietnamese support.
+   Hierarchy comes from size + weight: 500 for headings, 400 body, 500/700 for UI emphasis and prices. */
+:root{
+  --font-sans:'Roboto',Arial,'Helvetica Neue',sans-serif;
+  --font-mono:ui-monospace,'SF Mono',Menlo,monospace;
+  --font-display:'Imbue',Georgia,'Times New Roman',serif;
+  --font-heading:'Imbue',Georgia,'Times New Roman',serif;
+  --font-title:var(--font-sans);
+  --font-body:var(--font-sans);
+  --font-ui:var(--font-sans);
+
+  --fw-regular:400;/* @kind font */--fw-medium:500;/* @kind font */--fw-semibold:500;/* @kind font */--fw-bold:700;/* @kind font */
+  --fw-display:600;/* @kind font */
+
+  /* Mobile-first scale (px). Line-heights ≥1.15 on display headings so stacked Vietnamese marks (Ể, Ỗ, Ặ) never collide. */
+  --fs-display:44px;--lh-display:1.14;/* @kind font */--fs-display-lg:64px;
+  --fs-h1:34px;--lh-h1:1.18;/* @kind font */--fs-h1-lg:46px;
+  --fs-h2:26px;--lh-h2:1.2;/* @kind font */
+  --fs-h3:19px;--lh-h3:1.35;/* @kind font */
+  --fs-h4:16px;--lh-h4:1.4;/* @kind font */
+  --fs-body-lg:17px;--lh-body-lg:1.6;/* @kind font */
+  --fs-body:15px;--lh-body:1.6;/* @kind font */
+  --fs-small:13px;--lh-small:1.5;/* @kind font */
+  --fs-caption:12px;--lh-caption:1.45;/* @kind font */
+  --fs-eyebrow:11px;--ls-eyebrow:.16em;/* @kind font */
+  --fs-price:17px;--fs-price-lg:24px;
+
+  --ls-display:.015em;/* @kind font */--ls-tight:-.01em;/* @kind font */--ls-normal:0;/* @kind font */--ls-wide:.04em;/* @kind font */
+}
