@@ -28,7 +28,7 @@ const two = { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220
 
 export default function CheckoutForm() {
   const router = useRouter();
-  const { items, lines, ready, coupon, clear } = useCart();
+  const { items, lines, ready, coupon, clear, products } = useCart();
   const [book, setBook] = useState<SavedAddress[]>([]);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -67,11 +67,6 @@ export default function CheckoutForm() {
     if (b[0]) fill(b[0]);
   }, []);
 
-  // Đơn có hộp quà thì mặc định bật gói quà.
-  useEffect(() => {
-    if (items.some((i) => i.slug === "hop-qua-trao-gui")) setWrap(true);
-  }, [items]);
-
   const q = useMemo(() => quote({ items, coupon, province, express, giftWrap: wrap }), [items, coupon, province, express, wrap]);
   const region = regionOf(province);
 
@@ -91,7 +86,7 @@ export default function CheckoutForm() {
 
   // Sau lần bấm đặt hàng đầu tiên, kiểm tra lại ngay khi khách sửa để lỗi cũ tự mất.
   useEffect(() => {
-    if (tried) setErrors(validateOrder(input()));
+    if (tried) setErrors(validateOrder(input(), products));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tried, name, phone, email, toOther, rName, rPhone, province, address, message, payment, note, lines]);
 
@@ -99,7 +94,7 @@ export default function CheckoutForm() {
     setFailure(undefined);
     setTried(true);
     const data = input();
-    const errs = validateOrder(data);
+    const errs = validateOrder(data, products);
     setErrors(errs);
     if (Object.keys(errs).length) {
       requestAnimationFrame(() => document.querySelector<HTMLElement>("[aria-invalid='true']")?.focus());
@@ -110,7 +105,7 @@ export default function CheckoutForm() {
     setBusy(false);
     if (!r.ok) {
       if (r.errors) setErrors(r.errors);
-      setFailure(r.error ?? "Lam Trà chưa nhận được đơn. Bạn kiểm tra lại thông tin, hoặc nhắn Zalo để đặt trực tiếp.");
+      setFailure(r.error ?? "Hydron chưa nhận được đơn. Bạn kiểm tra lại thông tin, hoặc nhắn Zalo để đặt trực tiếp.");
       return;
     }
     const order = r.data.order;
@@ -136,7 +131,7 @@ export default function CheckoutForm() {
       <div className="lt-container" style={{ paddingTop: "16px", paddingBottom: "80px" }}>
         <Panel style={{ padding: "32px 28px", maxWidth: 560, display: "flex", flexDirection: "column", gap: 16, alignItems: "flex-start" }}>
           <p style={{ margin: 0, fontSize: 15, lineHeight: 1.6 }}>Giỏ hàng đang trống nên chưa thể đặt hàng.</p>
-          <Button href="/san-pham" iconRight="arrow-right">Chọn trà</Button>
+          <Button href="/san-pham" iconRight="arrow-right">Chọn bình</Button>
         </Panel>
       </div>
     );
@@ -158,7 +153,7 @@ export default function CheckoutForm() {
           )}
           <div style={two}>
             <Input label="Họ và tên" required autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} error={errors["buyer.name"]} />
-            <Input label="Số điện thoại" required type="tel" inputMode="tel" autoComplete="tel" value={phone} onChange={(e) => setPhone(e.target.value)} error={errors["buyer.phone"]} hint="Lam Trà xác nhận đơn qua Zalo số này." />
+            <Input label="Số điện thoại" required type="tel" inputMode="tel" autoComplete="tel" value={phone} onChange={(e) => setPhone(e.target.value)} error={errors["buyer.phone"]} hint="Hydron xác nhận đơn và gửi ảnh bình in qua Zalo số này." />
           </div>
           <Input label="Email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} error={errors["buyer.email"]} hint="Không bắt buộc. Để nhận hóa đơn và cập nhật đơn." />
           {/* Bẫy bot: người thật không nhìn thấy ô này */}
@@ -166,7 +161,7 @@ export default function CheckoutForm() {
         </Step>
 
         <Step n={2} title="Giao tới">
-          <Choice type="checkbox" checked={toOther} onChange={setToOther} icon="gift" title="Gửi tặng: giao tới người nhận khác" desc="Lam Trà gọi người nhận trước khi giao. Bạn vẫn nhận tin nhắn cập nhật đơn." />
+          <Choice type="checkbox" checked={toOther} onChange={setToOther} icon="gift" title="Gửi tặng: giao tới người nhận khác" desc="Hydron gọi người nhận trước khi giao. Bạn vẫn nhận tin nhắn cập nhật đơn." />
           {toOther && (
             <div style={two}>
               <Input label="Tên người nhận" required value={rName} onChange={(e) => setRName(e.target.value)} error={errors["recipient.name"]} />
@@ -181,29 +176,29 @@ export default function CheckoutForm() {
           </div>
         </Step>
 
-        <Step n={3} title="Gói quà và lời nhắn">
+        <Step n={3} title="Quà tặng">
           <Choice
             type="checkbox"
             checked={wrap}
             onChange={setWrap}
             icon="gift"
-            title="Gói quà kèm thiệp viết tay"
-            desc={`Giấy dó, dây lạt, thiệp Lam Trà. Miễn phí cho đơn từ ${formatVND(GIFT_WRAP_FREE_MIN)}.`}
+            title="Hộp quà kèm thiệp viết tay"
+            desc={`Hộp giấy cứng màu kem, giấy lụa, thiệp Hydron. Miễn phí cho đơn từ ${formatVND(GIFT_WRAP_FREE_MIN)}.`}
             aside={q.subtotal >= GIFT_WRAP_FREE_MIN ? "Miễn phí" : `+${formatVND(GIFT_WRAP_FEE)}`}
           />
           {wrap && (
-            <Input label="Lời nhắn trên thiệp" textarea rows={3} maxLength={300} value={message} onChange={(e) => setMessage(e.target.value)} error={errors["gift.message"]} hint={`${message.length}/300 · Lam Trà viết tay đúng như bạn ghi.`} placeholder="Kính chúc bố mẹ năm mới mạnh khỏe…" />
+            <Input label="Lời nhắn trên thiệp" textarea rows={3} maxLength={300} value={message} onChange={(e) => setMessage(e.target.value)} error={errors["gift.message"]} hint={`${message.length}/300 · Hydron viết tay đúng như bạn ghi.`} placeholder="Chúc mừng sinh nhật, nhớ uống đủ nước nhé…" />
           )}
           <Choice type="checkbox" checked={hidePrice} onChange={setHidePrice} title="Không kèm hóa đơn, ẩn giá trong gói hàng" desc="Phù hợp khi gửi biếu. Hóa đơn vẫn gửi riêng cho bạn qua Zalo/email." />
         </Step>
 
         <Step n={4} title="Thanh toán">
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <Choice name="pay" checked={payment === "vietqr"} onChange={() => setPayment("vietqr")} icon="qr-code" title="Chuyển khoản ngân hàng" desc={`Quét mã QR ở phần tóm tắt đơn. Lam Trà xác nhận trong vòng ${SITE.confirmWithin} sau khi nhận tiền.`} />
+            <Choice name="pay" checked={payment === "vietqr"} onChange={() => setPayment("vietqr")} icon="qr-code" title="Chuyển khoản ngân hàng" desc={`Quét mã QR ở phần tóm tắt đơn. Hydron xác nhận trong vòng ${SITE.confirmWithin} sau khi nhận tiền.`} />
             <Choice name="pay" checked={payment === "cod"} onChange={() => setPayment("cod")} icon="banknote" title="Thanh toán khi nhận hàng (COD)" desc={toOther && hidePrice ? "Người nhận sẽ phải trả tiền. Với quà biếu, bạn nên chọn chuyển khoản." : "Trả tiền mặt cho người giao hàng."} />
           </div>
           {errors.payment && <span style={{ fontSize: 12, color: "var(--danger)" }}>{errors.payment}</span>}
-          <Input label="Ghi chú cho Lam Trà" textarea rows={2} value={note} onChange={(e) => setNote(e.target.value)} error={errors.note} placeholder="Giờ nhận hàng, xuất hóa đơn công ty…" />
+          <Input label="Ghi chú cho Hydron" textarea rows={2} value={note} onChange={(e) => setNote(e.target.value)} error={errors.note} placeholder="Giờ nhận hàng, xuất hóa đơn công ty…" />
         </Step>
       </div>
 
@@ -231,7 +226,7 @@ export default function CheckoutForm() {
             {busy ? "Đang gửi đơn…" : "Xác nhận đặt hàng"}
           </Button>
           <span style={{ fontSize: 12, lineHeight: 1.5, color: "var(--text-muted)" }}>
-            Bấm đặt hàng là bạn đồng ý với <Link href="/chinh-sach#dieu-khoan">điều khoản</Link> và <Link href="/chinh-sach#bao-mat">chính sách bảo mật</Link> của Lam Trà.
+            Bấm đặt hàng là bạn đồng ý với <Link href="/chinh-sach#dieu-khoan">điều khoản</Link> và <Link href="/chinh-sach#bao-mat">chính sách bảo mật</Link> của Hydron.
           </span>
         </Panel>
       </aside>

@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: "Tra cứu đơn hàng", robots: { in
 export default function Page() {
   return (
     <>
-      <PageHeader title="Tra cứu đơn hàng" crumbs={[{ label: "Tra cứu đơn hàng" }]} desc="Nhập mã đơn (trong tin nhắn Zalo hoặc email) và số điện thoại đặt hàng." />
+      <PageHeader plain title="Tra cứu đơn hàng" crumbs={[{ label: "Tra cứu đơn hàng" }]} desc="Nhập mã đơn (trong tin nhắn Zalo hoặc email) và số điện thoại đặt hàng." />
       <Suspense><OrderLookup /></Suspense>
     </>
   );

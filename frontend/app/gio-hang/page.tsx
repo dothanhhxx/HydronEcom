@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "Giỏ hàng", robots: { index: false
 export default function Page() {
   return (
     <>
-      <PageHeader title="Giỏ hàng" crumbs={[{ label: "Giỏ hàng" }]} />
+      <PageHeader plain title="Giỏ hàng" crumbs={[{ label: "Giỏ hàng" }]} />
       <CartPage />
     </>
   );

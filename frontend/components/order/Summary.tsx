@@ -4,13 +4,13 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { formatVND } from "@/components/ds";
 import type { CartItem, Quote } from "@/lib/checkout";
-import { photo } from "@/lib/products";
+import { ItemVisual } from "@/components/bottle/ProductVisual";
 
 export function ItemRow({ item, children, link = true }: { item: CartItem; children?: ReactNode; link?: boolean }) {
   const name = <span style={{ fontSize: 15, fontWeight: 500, color: "var(--text-strong)" }}>{item.name}</span>;
   return (
     <div style={{ display: "flex", gap: 14, padding: "16px 0", borderBottom: "1px solid var(--border-hairline)" }}>
-      <span aria-hidden style={{ width: 72, height: 88, flexShrink: 0, borderRadius: 4, backgroundColor: "var(--surface-photo)", backgroundImage: `url('${photo(item.ph)}')`, backgroundSize: "cover", backgroundPosition: "center" }} />
+      <ItemVisual item={item} />
       <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 4 }}>
         <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
           {link ? <Link href={`/san-pham/${item.slug}`} className="lt-card-name" style={{ textDecoration: "none" }}>{name}</Link> : name}
@@ -20,6 +20,11 @@ export function ItemRow({ item, children, link = true }: { item: CartItem; child
           {item.variant} · {formatVND(item.unit)}
           {children ? "" : ` × ${item.qty}`}
         </span>
+        {item.customLabel && (
+          <span style={{ display: "inline-flex", alignSelf: "flex-start", alignItems: "center", gap: 6, padding: "3px 8px", borderRadius: 6, background: "var(--blue-50)", color: "var(--blue-700)", fontSize: 12.5, fontWeight: 500 }}>
+            {item.customLabel}
+          </span>
+        )}
         {children}
       </div>
     </div>
@@ -40,7 +45,7 @@ export function Totals({ q, shippingNote }: { q: Quote; shippingNote?: string })
       {q.discount > 0 && <Row k={`Giảm giá (${q.coupon})`} v={"−" + formatVND(q.discount)} tone="var(--success)" />}
       <Row k="Phí vận chuyển" v={q.shipping === 0 ? (q.shippingKnown ? "Miễn phí" : "Tính ở bước sau") : (q.shippingKnown ? "" : "từ ") + formatVND(q.shipping)} />
       {shippingNote && <span style={{ fontSize: 12, color: "var(--text-muted)", marginTop: -4 }}>{shippingNote}</span>}
-      {q.giftWrap > 0 && <Row k="Gói quà + thiệp" v={formatVND(q.giftWrap)} />}
+      {q.giftWrap > 0 && <Row k="Hộp quà + thiệp" v={formatVND(q.giftWrap)} />}
       <div style={{ height: 1, background: "var(--border-hairline)", margin: "4px 0" }} />
       <Row k="Tổng cộng" v={formatVND(q.total)} strong />
     </div>

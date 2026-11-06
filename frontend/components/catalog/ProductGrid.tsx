@@ -1,162 +1,219 @@
 "use client";
 
-import Link from "next/link";
+// Trang danh mục: lọc theo loại, dung tích, màu, giá; sắp xếp; tìm kiếm. Trạng thái nằm trên URL để chia sẻ được.
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { Button, Icon } from "@/components/ds";
-import { FilterSheet, PillGroup, SortMenu } from "./CatalogControls";
+import { CATEGORIES, getCategory, priceRange, type Product } from "@/lib/products";
 import { fold } from "@/lib/text";
-import { CATEGORIES, PRODUCTS, PURPOSES, getCategory, priceOf, type Product } from "@/lib/products";
-import { BuyGrid, FeaturedProduct } from "./BuyCard";
-
-const chip = (on: boolean) => ({
-  display: "inline-flex", alignItems: "center", height: 36, padding: "0 14px", borderRadius: 999, fontSize: 13, whiteSpace: "nowrap" as const,
-  textDecoration: "none", border: "1px solid " + (on ? "var(--text-strong)" : "var(--border-strong)"),
-  background: on ? "var(--text-strong)" : "transparent", color: on ? "var(--paper-50)" : "var(--text-strong)",
-});
+import { ProductGridList } from "./ProductCard";
 
 const PRICES = [
-  { value: "duoi-200", label: "Dưới 200.000₫", test: (n: number) => n < 200000 },
-  { value: "200-400", label: "200.000₫ – 400.000₫", test: (n: number) => n >= 200000 && n <= 400000 },
-  { value: "tren-400", label: "Trên 400.000₫", test: (n: number) => n > 400000 },
+  { value: "duoi-100", label: "Dưới 100.000₫", min: 0, max: 99999 },
+  { value: "100-160", label: "100.000₫ – 160.000₫", min: 100000, max: 160000 },
+  { value: "160-200", label: "160.000₫ – 200.000₫", min: 160001, max: 200000 },
 ];
 
 const SORTS: { value: string; label: string; cmp: (a: Product, b: Product) => number }[] = [
   { value: "", label: "Nổi bật", cmp: (a, b) => b.rating * b.reviews - a.rating * a.reviews },
   { value: "ban-chay", label: "Bán chạy", cmp: (a, b) => b.sold - a.sold },
   { value: "moi-nhat", label: "Mới nhất", cmp: (a, b) => b.addedAt.localeCompare(a.addedAt) },
-  { value: "gia-tang", label: "Giá thấp đến cao", cmp: (a, b) => priceOf(a) - priceOf(b) },
-  { value: "gia-giam", label: "Giá cao đến thấp", cmp: (a, b) => priceOf(b) - priceOf(a) },
+  { value: "gia-tang", label: "Giá tăng dần", cmp: (a, b) => priceRange(a)[0] - priceRange(b)[0] },
+  { value: "gia-giam", label: "Giá giảm dần", cmp: (a, b) => priceRange(b)[0] - priceRange(a)[0] },
 ];
 
-export default function ProductGrid({ initialProducts }: { initialProducts?: Product[] }) {
+const list = (v: string | null) => (v ? v.split(",").filter(Boolean) : []);
+
+function Filters({ products, get, toggle }: { products: Product[]; get: (k: string) => string[]; toggle: (k: string, v: string, single?: boolean) => void }) {
+  const sizes = Array.from(new Set(products.flatMap((p) => p.sizes))).sort();
+  const colors = Array.from(new Map(products.flatMap((p) => p.colors).map((c) => [c.id, c])).values());
+  const count = (fn: (p: Product) => boolean) => products.filter(fn).length;
+  const Group = ({ title, children }: { title: string; children: ReactNode }) => (
+    <fieldset className="hd-filter-group">
+      <legend>{title}</legend>
+      {children}
+    </fieldset>
+  );
+  return (
+    <>
+      <Group title="Loại sản phẩm">
+        {CATEGORIES.map((c) => (
+          <label key={c.slug} className="hd-check">
+            <input type="checkbox" checked={get("danh-muc").includes(c.slug)} onChange={() => toggle("danh-muc", c.slug, true)} />
+            {c.name}
+            <small>{count((p) => p.category === c.slug)}</small>
+          </label>
+        ))}
+      </Group>
+      <Group title="Dung tích">
+        {sizes.map((s) => (
+          <label key={s} className="hd-check">
+            <input type="checkbox" checked={get("dung-tich").includes(s)} onChange={() => toggle("dung-tich", s)} />
+            {s}ml
+            <small>{count((p) => p.sizes.includes(s))}</small>
+          </label>
+        ))}
+      </Group>
+      <Group title="Màu">
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+          {colors.map((c) => {
+            const on = get("mau").includes(c.id);
+            return (
+              <button key={c.id} type="button" className="hd-color-btn" aria-checked={on} role="checkbox" aria-label={c.name} title={c.name} style={{ background: c.hex, width: 36, height: 36 }} onClick={() => toggle("mau", c.id)} />
+            );
+          })}
+        </div>
+      </Group>
+      <Group title="Khoảng giá">
+        {PRICES.map((r) => (
+          <label key={r.value} className="hd-check">
+            <input type="checkbox" checked={get("gia").includes(r.value)} onChange={() => toggle("gia", r.value)} />
+            {r.label}
+          </label>
+        ))}
+      </Group>
+    </>
+  );
+}
+
+export default function ProductGrid({ initialProducts }: { initialProducts: Product[] }) {
   const params = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
+  const [sheet, setSheet] = useState(false);
+  const products = initialProducts.filter((p) => p.active !== false && !p.deleted);
 
-  const allProducts = initialProducts && initialProducts.length > 0 ? initialProducts : PRODUCTS;
-
-  const cat = params.get("danh-muc") ?? "";
-  const q = params.get("q") ?? "";
-  const purpose = params.get("muc-dich") ?? "";
-  const price = params.get("gia") ?? "";
-  const rating = params.get("sao") ?? "";
-  const sort = params.get("sap-xep") ?? "";
-
-  const hrefWith = (patch: Record<string, string>) => {
-    const sp = new URLSearchParams(params.toString());
-    for (const [k, v] of Object.entries(patch)) v ? sp.set(k, v) : sp.delete(k);
-    const s = sp.toString();
-    return s ? `${pathname}?${s}` : pathname;
+  const get = (k: string) => list(params.get(k));
+  const setParams = (mut: (u: URLSearchParams) => void) => {
+    const u = new URLSearchParams(params.toString());
+    mut(u);
+    const s = u.toString();
+    router.replace(s ? `${pathname}?${s}` : pathname, { scroll: false });
   };
-  const set = (patch: Record<string, string>) => router.replace(hrefWith(patch), { scroll: false });
+  const toggle = (k: string, v: string, single?: boolean) =>
+    setParams((u) => {
+      const cur = list(u.get(k));
+      const next = cur.includes(v) ? cur.filter((x) => x !== v) : single ? [v] : [...cur, v];
+      if (next.length) u.set(k, next.join(","));
+      else u.delete(k);
+    });
 
-  const list = useMemo(() => {
+  const q = params.get("q") ?? "";
+  const sort = params.get("sap-xep") ?? "";
+  const cat = get("danh-muc");
+  const sizes = get("dung-tich");
+  const colors = get("mau");
+  const prices = get("gia");
+
+  const shown = useMemo(() => {
     const k = fold(q.trim());
-    const pr = PRICES.find((x) => x.value === price);
-    const minStars = Number(rating) || 0;
-    const cmp = (SORTS.find((s) => s.value === sort) ?? SORTS[0]).cmp;
-    return allProducts.filter(
-      (p) =>
-        (!cat || p.category === cat) &&
-        (!k || fold(`${p.name} ${p.kind} ${p.note} ${p.desc}`).includes(k)) &&
-        (!purpose || p.purposes.includes(purpose as Product["purposes"][number])) &&
-        (!pr || pr.test(priceOf(p))) &&
-        p.rating >= minStars,
-    ).sort(cmp);
-  }, [allProducts, cat, q, purpose, price, rating, sort]);
+    const out = products.filter((p) => {
+      if (k && !fold(`${p.name} ${p.kind} ${p.note} ${p.desc} ${p.colors.map((c) => c.name).join(" ")}`).includes(k)) return false;
+      if (cat.length && !cat.includes(p.category)) return false;
+      if (sizes.length && !sizes.some((s) => p.sizes.includes(s))) return false;
+      if (colors.length && !p.colors.some((c) => colors.includes(c.id))) return false;
+      if (prices.length) {
+        const [lo, hi] = priceRange(p);
+        if (!prices.some((v) => { const r = PRICES.find((x) => x.value === v); return r && lo <= r.max && hi >= r.min; })) return false;
+      }
+      return true;
+    });
+    return out.sort((SORTS.find((s) => s.value === sort) ?? SORTS[0]).cmp);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [products, q, sort, cat.join(), sizes.join(), colors.join(), prices.join()]);
 
-  const category = getCategory(cat);
-  type Active = { label: string; clear: Record<string, string> };
-  const active: Active[] = [];
-  if (q) active.push({ label: `“${q}”`, clear: { q: "" } });
-  if (purpose) active.push({ label: PURPOSES.find((x) => x.value === purpose)?.label ?? purpose, clear: { "muc-dich": "" } });
-  if (price) active.push({ label: PRICES.find((x) => x.value === price)?.label ?? price, clear: { gia: "" } });
-  if (rating) active.push({ label: `Từ ${rating} sao`, clear: { sao: "" } });
-
-  const filters = (
-    <>
-      <PillGroup legend="Mục đích" options={PURPOSES} value={purpose} onChange={(v) => set({ "muc-dich": v })} />
-      <PillGroup legend="Khoảng giá (gói 150g)" options={PRICES} value={price} onChange={(v) => set({ gia: v })} />
-      <PillGroup legend="Đánh giá" options={["4.8", "4.5"].map((x) => ({ value: x, label: `Từ ${x} sao` }))} value={rating} onChange={(v) => set({ sao: v })} />
-    </>
-  );
-
-  const filtering = Boolean(cat || q || purpose || price || rating);
-  const featured = [...allProducts].filter((p) => p.active !== false).sort((a, b) => b.sold - a.sold)[0];
+  const active = [
+    ...cat.map((v) => ({ k: "danh-muc", v, label: getCategory(v)?.name ?? v })),
+    ...sizes.map((v) => ({ k: "dung-tich", v, label: `${v}ml` })),
+    ...colors.map((v) => ({ k: "mau", v, label: products.flatMap((p) => p.colors).find((c) => c.id === v)?.name ?? v })),
+    ...prices.map((v) => ({ k: "gia", v, label: PRICES.find((r) => r.value === v)?.label ?? v })),
+  ];
+  const title = q ? `Kết quả cho “${q}”` : cat.length === 1 ? getCategory(cat[0])?.name ?? "Sản phẩm" : "Tất cả sản phẩm";
+  const desc = cat.length === 1 ? getCategory(cat[0])?.desc : "Bình giữ nhiệt thép 304 dung tích 500 – 900ml và phụ kiện. Mọi bình đều in tên được.";
+  const clearAll = () => setParams((u) => ["danh-muc", "dung-tich", "mau", "gia", "q"].forEach((k) => u.delete(k)));
 
   return (
-    <div className="lt-container" style={{ paddingTop: 8, paddingBottom: 80 }}>
-      {!filtering && featured && <FeaturedProduct p={featured} />}
-
-      <header className="lt-collection-head">
-        <span>Bộ sưu tập Lam Trà</span>
-        <h1>{category ? category.name : "Sản phẩm Lam Trà"}</h1>
-        <p>{category ? category.desc : "Trà Tân Cương, Thái Nguyên hái tay, sao chảo gang, cùng những hộp quà gửi trao tấm lòng."}</p>
-      </header>
-
-      <div role="navigation" aria-label="Lọc theo danh mục" style={{ display: "flex", gap: 8, overflowX: "auto", padding: "4px 0 20px", scrollbarWidth: "none", justifyContent: "safe center" }}>
-        <Link href={hrefWith({ "danh-muc": "" })} style={chip(!cat)}>Tất cả</Link>
-        {CATEGORIES.map((c) => (
-          <Link key={c.slug} href={hrefWith({ "danh-muc": c.slug })} style={chip(cat === c.slug)}>{c.name}</Link>
-        ))}
-      </div>
-
-      <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 12, padding: "0 0 16px", borderBottom: "1px solid var(--border-hairline)", marginBottom: 28, fontSize: 14, color: "var(--text-muted)" }}>
-        <span style={{ flex: "1 1 260px" }}>
-          {list.length} sản phẩm{category ? ` trong ${category.name}` : ""}
-        </span>
-        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-          <button type="button" className="lt-tool-btn" aria-haspopup="dialog" onClick={() => setOpen(true)}>
-            <Icon name="sliders-horizontal" size={16} />
-            Bộ lọc
-            {active.length > 0 && <span className="lt-tool-count">{active.length}</span>}
-          </button>
-          <SortMenu value={sort} options={SORTS.map((s) => ({ value: s.value, label: s.label }))} onChange={(v) => set({ "sap-xep": v })} />
+    <div className="lt-container">
+      <div className="hd-catalog-head">
+        <div>
+          <h1>{title}</h1>
+          <p style={{ marginTop: 10, color: "var(--text-muted)", maxWidth: 560 }}>{desc}</p>
         </div>
       </div>
-
-      {active.length > 0 && (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, margin: "-12px 0 24px" }}>
-          {active.map((a) => (
-            <button key={a.label} type="button" onClick={() => set(a.clear)} style={{ ...chip(false), cursor: "pointer", gap: 6, fontFamily: "inherit", background: "var(--surface-card)" }}>
-              {a.label}
-              <Icon name="x" size={14} />
+      <div className="hd-toolbar">
+        <div className="hd-tabs" role="group" aria-label="Loại sản phẩm" style={{ flex: "0 1 auto", minWidth: 0 }}>
+          <button type="button" className="hd-tab" aria-pressed={!cat.length} onClick={() => setParams((u) => u.delete("danh-muc"))}>Tất cả</button>
+          {CATEGORIES.map((c) => (
+            <button key={c.slug} type="button" className="hd-tab" aria-pressed={cat.includes(c.slug)} onClick={() => setParams((u) => (cat.includes(c.slug) ? u.delete("danh-muc") : u.set("danh-muc", c.slug)))}>
+              {c.name}
             </button>
           ))}
-          <button type="button" onClick={() => set({ q: "", "muc-dich": "", gia: "", sao: "" })} style={{ border: 0, background: "transparent", color: "var(--text-link)", fontFamily: "inherit", fontSize: 13, cursor: "pointer", textDecoration: "underline" }}>
-            Xóa bộ lọc
-          </button>
+        </div>
+        <button type="button" className="hd-tab lt-mobile" onClick={() => setSheet(true)} style={{ flexShrink: 0 }}>
+          <Icon name="sliders-horizontal" size={16} />
+          Lọc{active.length ? ` (${active.length})` : ""}
+        </button>
+        <label className="hd-sort">
+          <span className="lt-sr">Sắp xếp</span>
+          <select value={sort} onChange={(e) => setParams((u) => (e.target.value ? u.set("sap-xep", e.target.value) : u.delete("sap-xep")))}>
+            {SORTS.map((s) => (
+              <option key={s.value} value={s.value}>{s.label}</option>
+            ))}
+          </select>
+          <Icon name="chevron-down" size={16} />
+        </label>
+      </div>
+
+      <div className="hd-catalog">
+        <aside className="hd-filters" aria-label="Bộ lọc">
+          <Filters products={products} get={get} toggle={toggle} />
+        </aside>
+        <div>
+          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8, marginBottom: 20, minHeight: 32 }}>
+            <span style={{ fontSize: 14, color: "var(--text-muted)", marginRight: 4 }} aria-live="polite">{shown.length} sản phẩm</span>
+            {q && (
+              <button type="button" className="hd-chip" onClick={() => setParams((u) => u.delete("q"))}>“{q}” <Icon name="x" size={14} /></button>
+            )}
+            {active.map((a) => (
+              <button key={a.k + a.v} type="button" className="hd-chip" onClick={() => toggle(a.k, a.v)} aria-label={`Bỏ lọc ${a.label}`}>
+                {a.label} <Icon name="x" size={14} />
+              </button>
+            ))}
+            {(active.length > 0 || q) && (
+              <button type="button" onClick={clearAll} style={{ border: 0, background: "transparent", color: "var(--text-link)", font: "500 13px var(--font-ui)", cursor: "pointer", textDecoration: "underline" }}>Xóa tất cả</button>
+            )}
+          </div>
+          {shown.length ? (
+            <ProductGridList products={shown} />
+          ) : (
+            <div role="status" style={{ padding: "48px 24px", borderRadius: "var(--radius-card)", background: "var(--cream-50)", textAlign: "center", display: "grid", gap: 14, justifyItems: "center" }}>
+              <Icon name="search" size={28} color="var(--text-muted)" />
+              <p style={{ fontSize: 16, color: "var(--text-strong)", fontWeight: 600 }}>Không có sản phẩm khớp bộ lọc</p>
+              <p style={{ fontSize: 14.5, color: "var(--text-muted)", maxWidth: 380 }}>Bỏ bớt một vài điều kiện, hoặc nhắn Hydron để hỏi mẫu bạn cần.</p>
+              <Button variant="secondary" onClick={clearAll}>Xóa bộ lọc</Button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {sheet && (
+        <div className="hd-sheet" role="dialog" aria-modal aria-label="Bộ lọc">
+          <div className="hd-sheet-scrim" onClick={() => setSheet(false)} />
+          <div className="hd-sheet-panel">
+            <div className="hd-sheet-head">
+              <h2>Bộ lọc</h2>
+              <button type="button" className="hd-icon-btn" aria-label="Đóng bộ lọc" onClick={() => setSheet(false)}><Icon name="x" size={22} /></button>
+            </div>
+            <div className="hd-sheet-body">
+              <Filters products={products} get={get} toggle={toggle} />
+            </div>
+            <div className="hd-sheet-foot">
+              <Button variant="secondary" onClick={clearAll}>Xóa lọc</Button>
+              <Button onClick={() => setSheet(false)}>Xem {shown.length} sản phẩm</Button>
+            </div>
+          </div>
         </div>
       )}
-
-      {list.length === 0 ? (
-        <div style={{ padding: "40px 0", display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 16 }}>
-          <p style={{ margin: 0, fontSize: 15, color: "var(--text-body)" }}>Chưa có loại trà phù hợp với lựa chọn của bạn. Bạn thử bỏ bớt bộ lọc, hoặc nhắn Zalo để Lam Trà tư vấn.</p>
-          <Button variant="secondary" href="/san-pham">Xem tất cả trà</Button>
-        </div>
-      ) : (
-        <BuyGrid products={list} />
-      )}
-
-      <FilterSheet
-        open={open}
-        onClose={() => setOpen(false)}
-        footer={
-          <>
-            <button type="button" className="lt-sheet-reset" onClick={() => set({ "muc-dich": "", gia: "", sao: "" })}>
-              <Icon name="rotate-ccw" size={15} />
-              Xóa lọc
-            </button>
-            <button type="button" className="lt-sheet-apply" onClick={() => setOpen(false)}>
-              Xem {list.length} sản phẩm
-            </button>
-          </>
-        }
-      >
-        {filters}
-      </FilterSheet>
     </div>
   );
 }

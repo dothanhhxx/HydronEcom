@@ -7,13 +7,12 @@ import { ProductApiService } from "@/services/products.api";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Tất cả trà",
-  description: "Trà xanh Móc Câu, Nõn Tôm, trà sen Đinh Sen, Đinh Thượng Hạng và hộp quà biếu từ Tân Cương, Thái Nguyên.",
+  title: "Bình giữ nhiệt và phụ kiện",
+  description: "Bình giữ nhiệt Hydron 500, 700, 900ml: nắp vặn, nắp ống hút, nắp bật. Lọc theo dung tích, màu, giá. In tên riêng trên mọi bình.",
 };
 
 export default async function CatalogPage() {
   const products = await ProductApiService.getAllProducts(false);
-
   return (
     <>
       <div className="lt-container" style={{ paddingTop: 20 }}>

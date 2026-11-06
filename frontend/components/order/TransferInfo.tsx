@@ -93,7 +93,7 @@ export default function TransferInfo({ amount, code }: { amount: number; code?: 
   ];
 
   return (
-    <section aria-labelledby="ck-title" style={{ display: "flex", flexDirection: "column", gap: 14, padding: 16, borderRadius: "var(--radius-md)", background: "var(--primary-soft)", border: "1px solid var(--reu-200)" }}>
+    <section aria-labelledby="ck-title" style={{ display: "flex", flexDirection: "column", gap: 14, padding: 16, borderRadius: "var(--radius-md)", background: "var(--primary-soft)", border: "1px solid var(--blue-100)" }}>
       <h3 id="ck-title" style={{ margin: 0, display: "flex", alignItems: "center", gap: 8, fontSize: 15, fontWeight: 500, color: "var(--primary)" }}>
         <Icon name="qr-code" size={18} />
         Thông tin chuyển khoản
@@ -111,7 +111,7 @@ export default function TransferInfo({ amount, code }: { amount: number; code?: 
               onError={() => setUseOwn(false)}
               style={{ display: "block", width: 144, height: 144, objectFit: "contain" }}
             />
-            <QrDownloadButton src={src} filename={`lam-tra-qr-${code || "thanh-toan"}.png`} />
+            <QrDownloadButton src={src} filename={`hydron-qr-${code || "thanh-toan"}.png`} />
           </span>
           <figcaption style={{ fontSize: 11, lineHeight: 1.35, textAlign: "center", color: "var(--text-muted)" }}>Quét bằng app ngân hàng</figcaption>
         </figure>
@@ -129,7 +129,7 @@ export default function TransferInfo({ amount, code }: { amount: number; code?: 
         {prefilled
           ? "Số tiền và nội dung đã điền sẵn trong mã QR."
           : <>Bạn nhập đúng <strong>số tiền</strong> và ghi <strong>{code ?? "mã đơn"}</strong> ở nội dung chuyển khoản.</>}{" "}
-        Lam Trà đối soát và xác nhận đơn qua Zalo trong vòng {SITE.confirmWithin}.
+        Hydron đối soát và xác nhận đơn qua Zalo trong vòng {SITE.confirmWithin}.
       </p>
     </section>
   );

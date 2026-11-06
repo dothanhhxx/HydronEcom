@@ -71,9 +71,9 @@ async function bootstrap() {
   server.get("/api/health", async (_request, reply) => {
     try {
       const storage = await JsonStore.ping();
-      return { ok: true, service: "lam-tra-api", storage, uptime: process.uptime(), timestamp: new Date().toISOString() };
+      return { ok: true, service: "hydron-api", storage, uptime: process.uptime(), timestamp: new Date().toISOString() };
     } catch (err: any) {
-      return reply.status(503).send({ ok: false, service: "lam-tra-api", error: err.message });
+      return reply.status(503).send({ ok: false, service: "hydron-api", error: err.message });
     }
   });
 
@@ -86,9 +86,9 @@ async function bootstrap() {
 
   try {
     const address = await server.listen({ port: ENV.PORT, host: ENV.HOST });
-    console.log(`[LamTra API] Server đang chạy tại: ${address}`);
+    console.log(`[Hydron API] Server đang chạy tại: ${address}`);
     if (!adminKeyConfigured()) {
-      console.warn("[LamTra API] ⚠ Trang quản trị đang bị KHOÁ: đặt ADMIN_SECRET_KEY (≥ 12 ký tự, khác mật khẩu mặc định) trong Environment.");
+      console.warn("[Hydron API] ⚠ Trang quản trị đang bị KHOÁ: đặt ADMIN_SECRET_KEY (≥ 12 ký tự, khác mật khẩu mặc định) trong Environment.");
     }
   } catch (err) {
     server.log.error(err);

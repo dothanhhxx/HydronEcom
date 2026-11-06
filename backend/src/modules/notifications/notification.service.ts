@@ -3,7 +3,7 @@ import { ENV } from "../../config/env.js";
 export class NotificationService {
   /** Gửi thông báo sự kiện qua Webhook tới Google Sheet, Telegram Bot, Zalo OA */
   static async notify(type: string, payload: object): Promise<boolean> {
-    const url = ENV.LAMTRA_WEBHOOK_URL;
+    const url = ENV.WEBHOOK_URL;
     if (!url) return false;
 
     try {

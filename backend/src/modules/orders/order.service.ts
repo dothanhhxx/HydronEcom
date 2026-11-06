@@ -7,9 +7,9 @@ import {
   newOrderCode,
   normalizePhone,
   quote,
-  toItems,
   validateOrder,
 } from "../../shared/checkout.js";
+import { toItems } from "../../shared/catalog.js";
 
 export type OrderListFilter = {
   status?: OrderStatus;
@@ -58,7 +58,7 @@ export class OrderService {
 
     const order: Order = {
       ...input,
-      lines: items.map(({ slug, size, grade, qty }) => ({ slug, size, grade, qty })),
+      lines: items.map(({ slug, size, color, qty, custom }) => ({ slug, size, color, qty, ...(custom ? { custom } : {}) })),
       coupon: totals.coupon,
       code,
       createdAt: new Date().toISOString(),

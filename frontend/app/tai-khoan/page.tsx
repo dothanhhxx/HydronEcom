@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "Tài khoản", robots: { index: fals
 export default function Page() {
   return (
     <>
-      <PageHeader title="Tài khoản" crumbs={[{ label: "Tài khoản" }]} />
+      <PageHeader plain title="Tài khoản" crumbs={[{ label: "Tài khoản" }]} />
       <AccountPage />
     </>
   );

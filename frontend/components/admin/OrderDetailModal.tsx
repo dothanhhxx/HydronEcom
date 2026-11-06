@@ -79,14 +79,14 @@ export function OrderDetailModal({
         </div>
 
         {/* Customer & Shipping info */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 14, background: "#FAF8F5", padding: "12px 14px", borderRadius: 8, border: "1px solid #E5E7EB" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 14, background: "#FFFDF8", padding: "12px 14px", borderRadius: 8, border: "1px solid #E5E7EB" }}>
           <div>
             <div style={{ fontSize: 11.5, textTransform: "uppercase", letterSpacing: "0.08em", color: "#6B7280", marginBottom: 4 }}>
               Khách hàng
             </div>
             <div style={{ fontSize: 14.5, fontWeight: 700, color: "#111827" }}>{order.buyer.name}</div>
             <div style={{ fontSize: 13.5, color: "#374151", margin: "2px 0" }}>
-              SĐT: <a href={`tel:${order.buyer.phone}`} style={{ color: "#047857", fontWeight: 700, textDecoration: "none" }}>{order.buyer.phone}</a>
+              SĐT: <a href={`tel:${order.buyer.phone}`} style={{ color: "#05708F", fontWeight: 700, textDecoration: "none" }}>{order.buyer.phone}</a>
             </div>
             {order.buyer.email && <div style={{ fontSize: 12.5, color: "#6B7280" }}>{order.buyer.email}</div>}
             
@@ -117,7 +117,7 @@ export function OrderDetailModal({
                   alignItems: "center",
                   padding: "6px 12px",
                   borderRadius: 6,
-                  background: "#047857",
+                  background: "#05708F",
                   color: "#FFFFFF",
                   fontSize: 12,
                   fontWeight: 600,
@@ -182,6 +182,7 @@ export function OrderDetailModal({
                     <td style={{ padding: "10px 12px" }}>
                       <div style={{ fontWeight: 600, color: "#111827" }}>{item.name}</div>
                       <div style={{ fontSize: 11.5, color: "#6B7280" }}>{item.variant}</div>
+                      {item.customLabel && <div style={{ marginTop: 3, fontSize: 12, fontWeight: 600, color: "#05708F" }}>✎ {item.customLabel}</div>}
                     </td>
                     <td style={{ padding: "10px 12px", textAlign: "center", fontWeight: 700 }}>{item.qty}</td>
                     <td style={{ padding: "10px 12px", textAlign: "right", color: "#4B5563" }}>{formatVND(item.unit)}</td>
@@ -201,7 +202,7 @@ export function OrderDetailModal({
               {order.payment === "vietqr" ? "Chuyển khoản VietQR" : "Thanh toán khi nhận hàng (COD)"}
             </div>
             {order.paidClaimedAt && (
-              <div style={{ fontSize: 12, color: "#047857", marginTop: 3 }}>
+              <div style={{ fontSize: 12, color: "#05708F", marginTop: 3 }}>
                 ✓ Khách đã bấm &ldquo;Tôi đã chuyển khoản&rdquo; lúc {new Date(order.paidClaimedAt).toLocaleTimeString("vi-VN")}
               </div>
             )}
@@ -233,7 +234,7 @@ export function OrderDetailModal({
                 <span>{formatVND(order.totals.giftWrap)}</span>
               </div>
             )}
-            <div style={{ display: "flex", justifyContent: "space-between", margin: "6px 0 0", paddingTop: 6, borderTop: "1px solid #E5E7EB", fontSize: 16, fontWeight: 800, color: "#0D2219" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", margin: "6px 0 0", paddingTop: 6, borderTop: "1px solid #E5E7EB", fontSize: 16, fontWeight: 800, color: "#062F3C" }}>
               <span>Tổng thu:</span>
               <span>{formatVND(order.totals.total)}</span>
             </div>
@@ -241,10 +242,10 @@ export function OrderDetailModal({
         </div>
 
         {/* Internal Admin Note */}
-        <div style={{ background: "#FAF8F5", padding: "12px 14px", borderRadius: 8, border: "1px solid #E5E7EB" }}>
+        <div style={{ background: "#FFFDF8", padding: "12px 14px", borderRadius: 8, border: "1px solid #E5E7EB" }}>
           <div style={{ fontSize: 12.5, fontWeight: 600, color: "#374151", marginBottom: 6, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <span>📌 Ghi chú nội bộ:</span>
-            {noteSaved && <span style={{ color: "#047857", fontSize: 11.5, fontWeight: 700 }}>✓ Đã lưu thành công!</span>}
+            {noteSaved && <span style={{ color: "#05708F", fontSize: 11.5, fontWeight: 700 }}>✓ Đã lưu thành công!</span>}
           </div>
           <div style={{ display: "flex", gap: 8 }}>
             <input
@@ -272,7 +273,7 @@ export function OrderDetailModal({
                 padding: "0 14px",
                 borderRadius: 6,
                 border: 0,
-                background: "#0D2219",
+                background: "#062F3C",
                 color: "#FFFFFF",
                 fontSize: 12.5,
                 fontWeight: 600,

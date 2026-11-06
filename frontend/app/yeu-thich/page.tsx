@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "Yêu thích", robots: { index: false
 export default function Page() {
   return (
     <>
-      <PageHeader title="Trà yêu thích" crumbs={[{ label: "Yêu thích" }]} />
+      <PageHeader plain title="Sản phẩm yêu thích" crumbs={[{ label: "Yêu thích" }]} />
       <WishlistPage />
     </>
   );

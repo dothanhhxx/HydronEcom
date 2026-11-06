@@ -4,11 +4,10 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button, Icon, Input, Panel, Skeleton, formatVND } from "@/components/ds";
-import { TeaGrid } from "@/components/catalog/TeaCard";
+import { ProductGridList } from "@/components/catalog/ProductCard";
 import { useCart } from "@/lib/cart";
 import { ORDER_STEPS, formatDateTime, isPhone, normalizePhone, type Order } from "@/lib/checkout";
 import { localOrder, localOrders, removeAddress, savedAddresses, type SavedAddress } from "@/lib/orders-store";
-import { PRODUCTS } from "@/lib/products";
 import { zaloLink } from "@/lib/site";
 import OrderView from "./OrderView";
 
@@ -52,7 +51,7 @@ export function OrderLookup() {
 
   const find = async () => {
     const c = code.trim().toUpperCase();
-    if (!c) return setError("Bạn nhập mã đơn, ví dụ LTAB12CD.");
+    if (!c) return setError("Bạn nhập mã đơn, ví dụ HDAB12CD.");
     if (!isPhone(phone)) return setError("Số điện thoại chưa đúng.");
     setError(undefined);
     setBusy(true);
@@ -70,14 +69,14 @@ export function OrderLookup() {
     }
     setBusy(false);
     setOrder(found);
-    if (!found) setError("Không tìm thấy đơn với mã và số điện thoại này. Bạn kiểm tra lại, hoặc nhắn Zalo để Lam Trà tra giúp.");
+    if (!found) setError("Không tìm thấy đơn với mã và số điện thoại này. Bạn kiểm tra lại, hoặc nhắn Zalo để Hydron tra giúp.");
   };
 
   return (
     <div className="lt-container" style={{ paddingTop: "8px", paddingBottom: "80px", maxWidth: 900, display: "flex", flexDirection: "column", gap: 32 }}>
       <form onSubmit={(e) => { e.preventDefault(); find(); }} style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "flex-start" }}>
         <div style={{ flex: "1 1 200px" }}>
-          <Input label="Mã đơn" value={code} onChange={(e) => setCode(e.target.value)} placeholder="LTAB12CD" style={{ textTransform: "uppercase" }} />
+          <Input label="Mã đơn" value={code} onChange={(e) => setCode(e.target.value)} placeholder="HDAB12CD" style={{ textTransform: "uppercase" }} />
         </div>
         <div style={{ flex: "1 1 200px" }}>
           <Input label="Số điện thoại đặt hàng" type="tel" inputMode="tel" value={phone} onChange={(e) => setPhone(e.target.value)} />
@@ -112,7 +111,7 @@ export function AccountPage() {
       <Panel tone="info" style={{ padding: "16px 20px", display: "flex", gap: 12, fontSize: 14, lineHeight: 1.6 }}>
         <Icon name="info" size={20} color="var(--primary)" />
         <span>
-          Bạn không cần tài khoản để mua trà. Trang này lưu đơn hàng, địa chỉ và trà yêu thích ngay trên điện thoại hoặc máy tính bạn đang dùng.
+          Bạn không cần tài khoản để mua hàng. Trang này lưu đơn hàng, địa chỉ và sản phẩm yêu thích ngay trên điện thoại hoặc máy tính bạn đang dùng.
           Để xem đơn đặt từ máy khác, bạn dùng <Link href="/tra-cuu-don">tra cứu đơn</Link>.
         </span>
       </Panel>
@@ -122,7 +121,7 @@ export function AccountPage() {
         {orders === undefined ? (
           <Loading />
         ) : orders.length === 0 ? (
-          <p style={{ margin: 0, fontSize: 15, color: "var(--text-body)" }}>Chưa có đơn nào trên thiết bị này. <Link href="/san-pham">Chọn trà</Link></p>
+          <p style={{ margin: 0, fontSize: 15, color: "var(--text-body)" }}>Chưa có đơn nào trên thiết bị này. <Link href="/san-pham">Chọn bình</Link></p>
         ) : (
           <div style={{ display: "flex", flexDirection: "column" }}>
             {orders.map((o) => (
@@ -134,11 +133,11 @@ export function AccountPage() {
                   <span style={{ fontSize: 13, color: "var(--text-muted)" }}>
                     {formatDateTime(o.createdAt)} · {o.items.map((i) => i.name).join(", ")}
                   </span>
-                  <span style={{ fontSize: 13, color: "var(--primary)" }}>{o.status < 0 ? "Đã hủy" : ORDER_STEPS[o.status]}</span>
+                  <span style={{ fontSize: 13, color: "var(--primary)" }}>{o.status < 0 ? "Đã hủy" : ORDER_STEPS[o.status as 0 | 1 | 2 | 3]}</span>
                 </div>
                 <div style={{ display: "flex", gap: 8 }}>
                   <Button variant="ghost" size="sm" href={`/dat-hang-thanh-cong?ma=${o.code}`}>Chi tiết</Button>
-                  <Button variant="secondary" size="sm" iconLeft="repeat" onClick={() => addMany(o.items.map(({ slug, size, grade, qty }) => ({ slug, size, grade, qty })))}>Mua lại</Button>
+                  <Button variant="secondary" size="sm" iconLeft="repeat" onClick={() => addMany(o.items.map(({ slug, size, color, qty, custom }) => ({ slug, size, color, qty, custom })))}>Mua lại</Button>
                 </div>
               </div>
             ))}
@@ -169,7 +168,7 @@ export function AccountPage() {
       </section>
 
       <section>
-        <h2 style={h2}>Trà yêu thích ({wishlist.length})</h2>
+        <h2 style={h2}>Sản phẩm yêu thích ({wishlist.length})</h2>
         <Link href="/yeu-thich">Xem danh sách yêu thích</Link>
       </section>
     </div>
@@ -178,8 +177,8 @@ export function AccountPage() {
 
 /** /yeu-thich */
 export function WishlistPage() {
-  const { wishlist, ready } = useCart();
-  const list = PRODUCTS.filter((p) => wishlist.includes(p.slug));
+  const { wishlist, ready, products } = useCart();
+  const list = products.filter((p) => wishlist.includes(p.slug));
   return (
     <div className="lt-container" style={{ paddingTop: "8px", paddingBottom: "80px" }}>
       {!ready ? (
@@ -187,11 +186,11 @@ export function WishlistPage() {
       ) : list.length === 0 ? (
         <Panel style={{ padding: "32px 28px", maxWidth: 560, display: "flex", flexDirection: "column", gap: 16, alignItems: "flex-start" }}>
           <Icon name="heart" size={28} color="var(--accent)" />
-          <p style={{ margin: 0, fontSize: 15, lineHeight: 1.6 }}>Bạn chưa lưu loại trà nào. Bấm biểu tượng trái tim trên ảnh trà để lưu lại và quay lại sau.</p>
-          <Button href="/san-pham" iconRight="arrow-right">Xem các loại trà</Button>
+          <p style={{ margin: 0, fontSize: 15, lineHeight: 1.6 }}>Bạn chưa lưu sản phẩm nào. Bấm biểu tượng trái tim trên ảnh sản phẩm để lưu lại và quay lại sau.</p>
+          <Button href="/san-pham" iconRight="arrow-right">Xem các mẫu bình</Button>
         </Panel>
       ) : (
-        <TeaGrid products={list} />
+        <ProductGridList products={list} />
       )}
     </div>
   );

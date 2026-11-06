@@ -1,6 +1,6 @@
 "use client";
 
-// Lam Trà design system components, ported from _ds_bundle.js.
+// Hydron UI kit: nút, ô nhập, hộp thoại, giá, đánh giá…
 import { useEffect, useId, useState, type CSSProperties, type InputHTMLAttributes, type ReactNode } from "react";
 import Link from "next/link";
 import { ICON_PATHS } from "./icon-paths";
@@ -177,7 +177,7 @@ export function IconButton({
         color: filled ? "var(--text-on-primary)" : "var(--text-strong)",
         background: filled
           ? hover ? "var(--primary-hover)" : "var(--primary)"
-          : variant === "surface" ? "rgba(251,248,242,.88)" : hover ? "var(--bg-sunken)" : "transparent",
+          : variant === "surface" ? "rgba(255,253,248,.92)" : hover ? "var(--bg-sunken)" : "transparent",
         border: variant === "outline" ? "1px solid var(--border-strong)" : "1px solid transparent",
         backdropFilter: variant === "surface" ? "blur(8px)" : undefined,
         transition: "background var(--dur-base) var(--ease-out)",
@@ -287,7 +287,7 @@ export function OptionPicker({
                 transition: "border-color var(--dur-fast)",
               }}
             >
-              {/* DS rule: Roboto has no 600, so selected uses 700 */}
+              
               <span style={{ fontSize: 14, fontWeight: sel ? 700 : 500 }}>{o.label}</span>
               {o.sub && <span style={{ fontSize: 11, color: "var(--text-muted)" }}>{o.sub}</span>}
             </button>
@@ -349,8 +349,8 @@ export function Input({
   const id = useId();
   const field: CSSProperties = {
     width: "100%", boxSizing: "border-box", minHeight: 48, padding: textarea ? "12px 14px" : "0 14px",
-    fontFamily: "var(--font-ui)", fontSize: 15, color: "var(--text-strong)", background: "#FAF8F5",
-    border: "1.2px solid " + (error ? "var(--danger)" : "rgba(36, 52, 31, 0.22)"), borderRadius: "var(--radius-input)",
+    fontFamily: "var(--font-ui)", fontSize: 15, color: "var(--text-strong)", background: "#FFFFFF",
+    border: "1.2px solid " + (error ? "var(--danger)" : "var(--border-strong)"), borderRadius: "var(--radius-input)",
     boxShadow: "inset 0 1px 2px rgba(0, 0, 0, 0.03)",
     outline: "none", resize: "vertical", ...style,
   };
@@ -376,7 +376,7 @@ export function QuantityStepper({ value, onChange, min = 1, max = 99, size = "md
   const h = size === "sm" ? 36 : 44;
   const btn: CSSProperties = { width: h, height: h, border: 0, background: "transparent", color: "var(--text-strong)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", padding: 0 };
   return (
-    <div style={{ display: "inline-flex", alignItems: "center", border: "1.2px solid rgba(36, 52, 31, 0.22)", borderRadius: "var(--radius-input)", background: "#FAF8F5", fontFamily: "var(--font-ui)", boxShadow: "inset 0 1px 2px rgba(0, 0, 0, 0.02)" }}>
+    <div style={{ display: "inline-flex", alignItems: "center", border: "1.2px solid var(--border-strong)", borderRadius: "var(--radius-input)", background: "#FFFFFF", fontFamily: "var(--font-ui)", boxShadow: "inset 0 1px 2px rgba(0, 0, 0, 0.02)" }}>
       <button type="button" aria-label="Giảm số lượng" disabled={value <= min} onClick={() => onChange(value - 1)} style={{ ...btn, opacity: value <= min ? 0.35 : 1 }}>
         <Icon name="minus" size={16} />
       </button>

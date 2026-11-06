@@ -41,21 +41,16 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           {/* Left Brand Badge */}
           <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
             <Link href="/quan-tri/don-hang" className="lt-header-logo-box" style={{ textDecoration: "none" }}>
-              <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 6, background: "rgba(188, 154, 108, 0.16)", border: "1px solid rgba(188, 154, 108, 0.3)" }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/assets/lam-tra-emblem.svg" alt="" style={{ height: 34, width: "auto" }} />
-              </span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/assets/brand/hydron-logo-cream.png" alt="Hydron" style={{ height: 26, width: "auto" }} />
               <span style={{ display: "flex", flexDirection: "column", lineHeight: 1.15 }}>
-                <span style={{ fontSize: 18.5, fontWeight: 800, letterSpacing: "0.08em", color: "#F7F0E3", fontFamily: "var(--font-display, serif)" }}>
-                  LAM TRÀ
-                </span>
-                <span style={{ fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--tra-300)", fontWeight: 600 }}>
+                <span style={{ fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--blue-200)", fontWeight: 600 }}>
                   QUẢN TRỊ VIÊN
                 </span>
               </span>
             </Link>
 
-            <span style={{ width: 1, height: 32, background: "rgba(188, 154, 108, 0.35)", margin: "0 4px" }} />
+            <span style={{ width: 1, height: 32, background: "rgba(6, 136, 174, 0.35)", margin: "0 4px" }} />
 
             {/* Navigation Tabs */}
             <nav style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -73,11 +68,11 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                       borderRadius: 8,
                       fontSize: 14,
                       fontWeight: active ? 700 : 500,
-                      color: active ? "#0D2219" : "#F5EEDB",
-                      background: active ? "linear-gradient(135deg, #DFBE89, #BC9A6C)" : "rgba(255, 255, 255, 0.05)",
-                      border: active ? "1px solid #DFBE89" : "1px solid rgba(188, 154, 108, 0.2)",
+                      color: active ? "#062F3C" : "#FDF2DF",
+                      background: active ? "#FDF2DF" : "rgba(255, 255, 255, 0.05)",
+                      border: active ? "1px solid #62B3CE" : "1px solid rgba(6, 136, 174, 0.2)",
                       textDecoration: "none",
-                      boxShadow: active ? "0 2px 8px rgba(188, 154, 108, 0.4)" : "none",
+                      boxShadow: active ? "0 2px 8px rgba(6, 136, 174, 0.4)" : "none",
                       transition: "all 180ms ease",
                     }}
                   >
@@ -101,9 +96,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 height: 44,
                 padding: "0 18px",
                 borderRadius: 999,
-                border: "1.5px solid rgba(188, 154, 108, 0.55)",
-                background: "rgba(188, 154, 108, 0.12)",
-                color: "#F5EEDB",
+                border: "1.5px solid rgba(6, 136, 174, 0.55)",
+                background: "rgba(6, 136, 174, 0.12)",
+                color: "#FDF2DF",
                 fontSize: 13.5,
                 fontWeight: 600,
                 textDecoration: "none",
@@ -114,7 +109,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               <span>Xem cửa hàng</span>
             </Link>
 
-            <span style={{ width: 1, height: 28, background: "rgba(188, 154, 108, 0.35)" }} />
+            <span style={{ width: 1, height: 28, background: "rgba(6, 136, 174, 0.35)" }} />
 
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 8, background: "rgba(255, 255, 255, 0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
@@ -153,8 +148,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         className="lt-admin-header-mobile"
         style={{
           flexDirection: "column",
-          background: "#0D2219",
-          borderBottom: "1.5px solid rgba(188, 154, 108, 0.4)",
+          background: "#062F3C",
+          borderBottom: "1.5px solid rgba(6, 136, 174, 0.4)",
           position: "sticky",
           top: 0,
           zIndex: 40,
@@ -168,20 +163,15 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             alignItems: "center",
             justifyContent: "space-between",
             padding: "10px 14px",
-            borderBottom: "1px solid rgba(188, 154, 108, 0.2)",
+            borderBottom: "1px solid rgba(6, 136, 174, 0.2)",
           }}
         >
           {/* Logo brand */}
           <Link href="/quan-tri/don-hang" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-            <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 34, height: 34, borderRadius: 6, background: "rgba(188, 154, 108, 0.18)", border: "1px solid rgba(188, 154, 108, 0.35)" }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/assets/lam-tra-emblem.svg" alt="" style={{ height: 24, width: "auto" }} />
-            </span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/assets/brand/hydron-logo-cream.png" alt="Hydron" style={{ height: 20, width: "auto" }} />
             <div style={{ lineHeight: 1.15 }}>
-              <div style={{ fontSize: 16, fontWeight: 800, letterSpacing: "0.06em", color: "#F7F0E3", fontFamily: "var(--font-display, serif)" }}>
-                LAM TRÀ
-              </div>
-              <div style={{ fontSize: 9.5, letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--tra-300)", fontWeight: 600 }}>
+              <div style={{ fontSize: 9.5, letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--blue-200)", fontWeight: 600 }}>
                 QUẢN TRỊ VIÊN
               </div>
             </div>
@@ -199,9 +189,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 height: 34,
                 padding: "0 10px",
                 borderRadius: 6,
-                border: "1px solid rgba(188, 154, 108, 0.45)",
-                background: "rgba(188, 154, 108, 0.12)",
-                color: "#F5EEDB",
+                border: "1px solid rgba(6, 136, 174, 0.45)",
+                background: "rgba(6, 136, 174, 0.12)",
+                color: "#FDF2DF",
                 fontSize: 12,
                 fontWeight: 600,
                 textDecoration: "none",
@@ -241,7 +231,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             gridTemplateColumns: "repeat(3, 1fr)",
             padding: "4px 8px 6px",
             gap: 6,
-            background: "#081711",
+            background: "#04222C",
           }}
         >
           {navItems.map((item) => {
@@ -261,11 +251,11 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                   borderRadius: 6,
                   fontSize: 11.5,
                   fontWeight: active ? 700 : 500,
-                  color: active ? "#0D2219" : "#D1D5DB",
-                  background: active ? "linear-gradient(135deg, #DFBE89, #BC9A6C)" : "transparent",
+                  color: active ? "#062F3C" : "#D1D5DB",
+                  background: active ? "#FDF2DF" : "transparent",
                   textDecoration: "none",
                   textAlign: "center",
-                  boxShadow: active ? "0 2px 6px rgba(188, 154, 108, 0.4)" : "none",
+                  boxShadow: active ? "0 2px 6px rgba(6, 136, 174, 0.4)" : "none",
                   transition: "all 150ms ease",
                 }}
               >

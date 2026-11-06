@@ -18,14 +18,22 @@ export function Breadcrumbs({ crumbs }: { crumbs: Crumb[] }) {
   );
 }
 
-export function PageHeader({ title, eyebrow, desc, crumbs = [] }: { title: string; eyebrow?: string; desc?: ReactNode; crumbs?: Crumb[] }) {
+/** Đầu trang thông tin: nền kem, tiêu đề lớn. `plain` dùng cho trang giao dịch (giỏ, đặt hàng). */
+export function PageHeader({ title, desc, crumbs = [], plain }: { title: string; eyebrow?: string; desc?: ReactNode; crumbs?: Crumb[]; plain?: boolean }) {
+  if (plain)
+    return (
+      <div className="lt-container" style={{ paddingTop: 20, paddingBottom: 24 }}>
+        <Breadcrumbs crumbs={crumbs} />
+        <h1 style={{ marginTop: 16, fontSize: "clamp(28px,3.4vw,40px)" }}>{title}</h1>
+        {desc && <p style={{ marginTop: 10, maxWidth: 620, fontSize: 15.5, lineHeight: 1.6, color: "var(--text-muted)" }}>{desc}</p>}
+      </div>
+    );
   return (
-    <div>
-      <div className="lt-container" style={{ paddingTop: "clamp(16px,3vw,28px)", paddingBottom: "clamp(24px,5vw,72px)" }}>
-      <Breadcrumbs crumbs={crumbs} />
-      {eyebrow && <div style={{ marginTop: 24, fontSize: 11, letterSpacing: ".16em", textTransform: "uppercase", fontWeight: 500, color: "var(--accent)" }}>{eyebrow}</div>}
-      <h1 style={{ margin: eyebrow ? "8px 0 0" : "24px 0 0", fontSize: "clamp(30px,4vw,48px)", lineHeight: 1.15, fontWeight: 500, letterSpacing: "-.01em", color: "var(--text-strong)" }}>{title}</h1>
-      {desc && <p style={{ margin: "14px 0 0", maxWidth: 600, fontSize: 16, lineHeight: 1.65, color: "var(--text-body)" }}>{desc}</p>}
+    <div className="hd-page-head">
+      <div className="lt-container hd-page-head-inner">
+        <Breadcrumbs crumbs={crumbs} />
+        <h1>{title}</h1>
+        {desc && <p>{desc}</p>}
       </div>
     </div>
   );

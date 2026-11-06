@@ -1,12 +1,12 @@
 # ═══════════════════════════════════════════════════════════════════════════
-# CẤU HÌNH DEPLOY RENDER (RENDER BLUEPRINT) - LAM TRÀ E-COMMERCE
+# CẤU HÌNH DEPLOY RENDER (RENDER BLUEPRINT) - HYDRON E-COMMERCE
 # ═══════════════════════════════════════════════════════════════════════════
 # Tài liệu chính thức: https://render.com/docs/blueprint-spec
 #
 # Cách sử dụng:
 # 1. Đẩy code lên GitHub: git push origin main
 # 2. Truy cập dashboard Render (https://dashboard.render.com)
-# 3. Chọn "New +" -> "Blueprint" -> Chọn repo LamTraE-Com
+# 3. Chọn "New +" -> "Blueprint" -> Chọn repo HydronEcom
 # 4. Render sẽ tự động đọc file render.yaml này và khởi tạo dịch vụ.
 # ═══════════════════════════════════════════════════════════════════════════
 
@@ -19,21 +19,32 @@ services:
   #  - Tránh bị độ trễ khởi động lạnh (Cold-start) chéo giữa 2 service
   #  - Ảnh tải lên và dữ liệu JSON lưu đồng nhất trên cùng hệ thống tệp
   - type: web
-    name: lam-tra-ecom
+    name: hydron-ecom
     runtime: node
     plan: free
     region: singapore # Vùng Singapore cho độ trễ thấp nhất từ Việt Nam (~35ms)
     buildCommand: npm install && npm run build
     startCommand: npm start
+    healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
       # Bí mật: nhập trên Render Dashboard → Environment (sync: false = không lưu trong repo)
       - key: ADMIN_SECRET_KEY
         sync: false
-      - key: SUPABASE_URL
+      # Database + ảnh trên Appwrite Cloud
+      - key: APPWRITE_ENDPOINT
+        value: https://sgp.cloud.appwrite.io/v1
+      - key: APPWRITE_DATABASE_ID
+        value: Ecommerce
+      - key: APPWRITE_BUCKET_ID
+        value: products
+      - key: APPWRITE_PROJECT_ID
         sync: false
-      - key: SUPABASE_SERVICE_ROLE_KEY
+      - key: APPWRITE_API_KEY
+        sync: false
+      # Địa chỉ web thật, vd. https://hydron-ecom.onrender.com (dùng cho SEO/sitemap, cần trước khi build)
+      - key: NEXT_PUBLIC_SITE_URL
         sync: false
       - key: BACKEND_INTERNAL_PORT
         value: "4000"

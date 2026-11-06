@@ -45,29 +45,35 @@ export class ProductService {
     if (isNaN(base) || base <= 0) {
       return { ok: false, error: "Giá bán cơ sở phải là số lớn hơn 0." };
     }
+    if (!Array.isArray(data.colors) || data.colors.length === 0) {
+      return { ok: false, error: "Sản phẩm cần ít nhất một màu." };
+    }
 
     const product: Product = {
       slug,
+      sku: data.sku,
       name: data.name.trim(),
-      category: data.category || "tra-xanh",
-      kind: data.kind || "Trà xanh",
+      category: data.category || "binh",
+      kind: data.kind || "Bình giữ nhiệt",
       note: data.note || "",
       base,
       compareAt: data.compareAt ? Number(data.compareAt) : undefined,
-      fixed: !!data.fixed,
-      rating: data.rating || 5.0,
+      sizes: Array.isArray(data.sizes) ? data.sizes.filter((s) => ["500", "700", "900"].includes(s)) : [],
+      sizePrices: data.sizePrices,
+      colors: data.colors,
+      shape: data.shape || "classic",
+      customizable: data.customizable ?? (data.category || "binh") === "binh",
+      rating: data.rating || 0,
       reviews: data.reviews || 0,
       sold: data.sold || 0,
       isNew: data.isNew !== undefined ? data.isNew : true,
       addedAt: data.addedAt || new Date().toISOString().slice(0, 10),
-      origin: data.origin || "Tân Cương · Thái Nguyên",
-      ph: data.ph || "moccau",
+      ph: data.ph || "",
       gallery: data.gallery || [],
+      video: data.video,
       desc: data.desc || "",
-      purposes: data.purposes || ["hang-ngay"],
-      occasions: data.occasions || [],
       specs: data.specs || [],
-      brew: data.brew,
+      care: data.care || [],
       stock: data.stock || {},
       active: data.active !== undefined ? data.active : true,
       deleted: false,

@@ -3,7 +3,7 @@ import { SITE } from "@/lib/site";
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: { userAgent: "*", allow: "/", disallow: ["/api/", "/gio-hang", "/thanh-toan", "/dat-hang-thanh-cong", "/tai-khoan", "/yeu-thich", "/tra-cuu-don"] },
+    rules: { userAgent: "*", allow: "/", disallow: ["/api/", "/gio-hang", "/thanh-toan", "/dat-hang-thanh-cong", "/tai-khoan", "/yeu-thich", "/tra-cuu-don", "/quan-tri"] },
     sitemap: `${SITE.url}/sitemap.xml`,
   };
 }

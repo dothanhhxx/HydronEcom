@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Render Production Runner cho Lam Trà E-Commerce
+ * Render Production Runner cho Hydron E-Commerce
  *
  * Tác dụng:
  * 1. Khởi động Fastify API Backend tại cổng nội bộ 4000 (127.0.0.1:4000)
@@ -20,7 +20,7 @@ const PUBLIC_PORT = process.env.PORT || "3000";
 const BACKEND_INTERNAL_PORT = process.env.BACKEND_INTERNAL_PORT || "4000";
 
 console.log("══════════════════════════════════════════════════════════════");
-console.log("  🍵 LAM TRÀ E-COMMERCE - RENDER PRODUCTION RUNNER");
+console.log("  🍵 HYDRON E-COMMERCE - RENDER PRODUCTION RUNNER");
 console.log("══════════════════════════════════════════════════════════════");
 console.log(`  ▶ Cổng Render công khai (Next.js): ${PUBLIC_PORT}`);
 console.log(`  ▶ Cổng nội bộ (Fastify Backend):   ${BACKEND_INTERNAL_PORT}`);

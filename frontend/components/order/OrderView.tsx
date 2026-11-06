@@ -18,7 +18,7 @@ function PayBlock({ order, onClaimed }: { order: Order; onClaimed: (at: string) 
     const r = await postJSON<{ paidClaimedAt: string }>("/api/orders", { code: order.code, phone: order.buyer.phone }, "PATCH");
     setBusy(false);
     if (r.ok) onClaimed(r.data.paidClaimedAt);
-    else setError(r.error ?? "Chưa gửi được. Bạn nhắn Zalo kèm ảnh chuyển khoản giúp Lam Trà nhé.");
+    else setError(r.error ?? "Chưa gửi được. Bạn nhắn Zalo kèm ảnh chuyển khoản giúp Hydron nhé.");
   };
   return (
     <Panel style={{ padding: 20, display: "flex", flexDirection: "column", gap: 14 }}>
@@ -26,7 +26,7 @@ function PayBlock({ order, onClaimed }: { order: Order; onClaimed: (at: string) 
       {order.paidClaimedAt ? (
         <div role="status" style={{ display: "flex", gap: 8, fontSize: 14, lineHeight: 1.5, color: "var(--success)" }}>
           <Icon name="circle-check" size={18} />
-          Bạn đã báo chuyển khoản lúc {formatDateTime(order.paidClaimedAt)}. Lam Trà sẽ đối soát và xác nhận qua Zalo trong vòng {SITE.confirmWithin}.
+          Bạn đã báo chuyển khoản lúc {formatDateTime(order.paidClaimedAt)}. Hydron sẽ đối soát và xác nhận qua Zalo trong vòng {SITE.confirmWithin}.
         </div>
       ) : (
         <Button onClick={claim} disabled={busy} iconLeft="check">{busy ? "Đang gửi…" : "Tôi đã chuyển khoản"}</Button>
@@ -49,9 +49,9 @@ export default function OrderView({ order: initial, fresh }: { order: Order; fre
         <div style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
           <Icon name="circle-check" size={36} color="var(--success)" />
           <div>
-            <h1 style={{ margin: 0, fontSize: "clamp(24px,3vw,32px)", lineHeight: 1.25, fontWeight: 500, color: "var(--text-strong)" }}>Cảm ơn bạn, Lam Trà đã nhận đơn</h1>
+            <h1 style={{ margin: 0, fontSize: "clamp(24px,3vw,32px)", lineHeight: 1.25, fontWeight: 500, color: "var(--text-strong)" }}>Cảm ơn bạn, Hydron đã nhận đơn</h1>
             <p style={{ margin: "8px 0 0", fontSize: 15, lineHeight: 1.6, color: "var(--text-body)" }}>
-              Lam Trà sẽ xác nhận và nhắn tin qua Zalo số {order.buyer.phone} trong vòng {SITE.confirmWithin} (8:00 – 21:00).
+              Hydron sẽ xác nhận và nhắn tin qua Zalo số {order.buyer.phone} trong vòng {SITE.confirmWithin} (8:00 – 21:00).
               {order.payment === "vietqr" ? (order.paidClaimedAt ? "" : " Nếu chưa chuyển khoản, bạn quét mã bên dưới để đơn được đóng gói ngay.") : ""}
             </p>
           </div>
@@ -101,10 +101,12 @@ export default function OrderView({ order: initial, fresh }: { order: Order; fre
           <div>
             {order.express ? "Giao nhanh" : "Giao tiêu chuẩn"} · {order.payment === "vietqr" ? "Chuyển khoản ngân hàng" : "Thanh toán khi nhận hàng"}
           </div>
+          {order.items.some((i) => i.custom) && <div>Bình in riêng: Hydron gửi ảnh bản in qua Zalo trước khi giao.</div>}
+          {order.items.some((i) => i.custom) && <div>Bình in riêng: Hydron gửi ảnh bản in qua Zalo trước khi giao.</div>}
           {order.gift?.wrap && (
             <div style={{ display: "flex", gap: 8 }}>
               <Icon name="gift" size={18} color="var(--accent)" />
-              <span>Gói quà kèm thiệp{order.gift.message ? `: “${order.gift.message}”` : ""}</span>
+              <span>Hộp quà kèm thiệp{order.gift.message ? `: “${order.gift.message}”` : ""}</span>
             </div>
           )}
           {order.gift?.hidePrice && <div style={{ color: "var(--text-muted)" }}>Không kèm hóa đơn trong gói hàng</div>}
@@ -113,7 +115,7 @@ export default function OrderView({ order: initial, fresh }: { order: Order; fre
       </div>
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-        <Button variant="secondary" iconLeft="repeat" onClick={() => addMany(order.items.map(({ slug, size, grade, qty }) => ({ slug, size, grade, qty })))}>Mua lại đơn này</Button>
+        <Button variant="secondary" iconLeft="repeat" onClick={() => addMany(order.items.map(({ slug, size, color, qty, custom }) => ({ slug, size, color, qty, custom })))}>Mua lại đơn này</Button>
         <Button variant="ghost" iconLeft="message-circle" href={zaloLink()}>Nhắn Zalo về đơn</Button>
       </div>
     </div>

@@ -8,7 +8,9 @@ export class ProductRepository {
   /** Đọc toàn bộ danh sách sản phẩm từ data/products.json, tự động nạp mẫu nếu trống */
   static async findAll(): Promise<Product[]> {
     const list = await JsonStore.readJson<Product[]>(PRODUCTS_FILE, []);
-    if (!list || list.length === 0) {
+    // Dữ liệu cũ (trước Hydron) không có trường màu: thay bằng danh mục mặc định.
+    const legacy = Array.isArray(list) && list.some((p) => !Array.isArray((p as Partial<Product>).colors) || !Array.isArray((p as Partial<Product>).sizes));
+    if (!list || list.length === 0 || legacy) {
       await JsonStore.writeJson(PRODUCTS_FILE, DEFAULT_PRODUCTS);
       return DEFAULT_PRODUCTS;
     }
@@ -58,10 +60,10 @@ export class ProductRepository {
       reviews: product.reviews ?? 0,
       sold: product.sold ?? 0,
       addedAt: product.addedAt || now,
-      origin: product.origin || "Tân Cương · Thái Nguyên",
       gallery: product.gallery || [],
-      purposes: product.purposes || ["hang-ngay", "bieu-tang"],
-      occasions: product.occasions || [],
+      sizes: product.sizes || [],
+      colors: product.colors || [],
+      care: product.care || [],
       specs: product.specs || [],
       active: product.active !== undefined ? product.active : true,
       deleted: false,

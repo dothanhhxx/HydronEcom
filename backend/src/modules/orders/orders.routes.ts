@@ -3,6 +3,7 @@ import { adminAuthGuard } from "../../middleware/auth-guard.js";
 import { OrderService } from "./order.service.js";
 import type { OrderInput, OrderStatus } from "../../shared/types/order.types.js";
 import { normalizePhone } from "../../shared/checkout.js";
+import { normalizeCustom } from "../../shared/catalog.js";
 
 const str = (v: unknown, max = 200) => (typeof v === "string" ? v.trim().slice(0, max) : "");
 
@@ -10,12 +11,16 @@ function sanitizeOrderInput(b: Record<string, any>): OrderInput {
   const lines = Array.isArray(b.lines) ? b.lines.slice(0, 50) : [];
   return {
     code: str(b.code, 12).toUpperCase() || undefined,
-    lines: lines.map((l: any) => ({
-      slug: str(l?.slug, 80),
-      size: str(l?.size, 4),
-      grade: str(l?.grade, 4),
-      qty: Number(l?.qty) || 0,
-    })),
+    lines: lines.map((l: any) => {
+      const custom = l?.custom && typeof l.custom === "object" ? normalizeCustom({ text: str(l.custom.text, 40), font: str(l.custom.font, 12) as any, ink: str(l.custom.ink, 9), sticker: str(l.custom.sticker, 20) || undefined }) : undefined;
+      return {
+        slug: str(l?.slug, 80),
+        size: str(l?.size, 4),
+        color: str(l?.color, 40),
+        qty: Number(l?.qty) || 0,
+        ...(custom ? { custom } : {}),
+      };
+    }),
     buyer: {
       name: str(b.buyer?.name, 80),
       phone: normalizePhone(str(b.buyer?.phone, 20)),

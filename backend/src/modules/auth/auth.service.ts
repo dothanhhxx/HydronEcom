@@ -1,11 +1,11 @@
 import { ENV } from "../../config/env.js";
 
-export const ADMIN_COOKIE_NAME = "lt_admin_session";
+export const ADMIN_COOKIE_NAME = "hd_admin_session";
 const SESSION_DURATION_MS = 30 * 24 * 60 * 60 * 1000; // 30 ngày
 
 // Mật khẩu mặc định này từng nằm công khai trong repo và trên trang đăng nhập: chỉ dùng khi chạy local.
 // Ở production, khoá thiếu / ngắn hơn 12 ký tự / trùng mặc định đều bị coi như chưa cấu hình → khoá trang quản trị.
-const DEV_DEFAULT_KEY = "LamTra@TanCuong2026";
+const DEV_DEFAULT_KEY = "Hydron@Dev2026";
 
 function getSecretKey(): string {
   const key = ENV.ADMIN_SECRET_KEY.trim();

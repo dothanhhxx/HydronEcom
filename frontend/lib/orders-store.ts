@@ -3,8 +3,8 @@
 import type { Order } from "./checkout";
 import { readJSON, writeJSON } from "./storage";
 
-const ORDERS_KEY = "lamtra-orders-v1";
-const ADDR_KEY = "lamtra-addresses-v1";
+const ORDERS_KEY = "hydron-orders-v1";
+const ADDR_KEY = "hydron-addresses-v1";
 // Số ngày giữ lịch sử đơn trên máy, tính theo ngày lịch: 1 = chỉ trong hôm nay (qua 0h là xoá), 3 = hôm nay và 2 ngày trước.
 // Chỉ xoá bản lưu trên trình duyệt; đơn trên server vẫn còn và tra cứu được bằng mã đơn + SĐT.
 const KEEP_DAYS = 3;

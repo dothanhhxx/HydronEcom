@@ -34,12 +34,12 @@ export const messagesRoutes: FastifyPluginAsync = async (fastify) => {
     };
 
     const errors: Record<string, string> = {};
-    if (!rec.name) errors.name = "Bạn cho Lam Trà xin tên.";
+    if (!rec.name) errors.name = "Bạn cho Hydron xin tên.";
     if (type === "danh-gia") {
       if (rec.message.length < 10) errors.message = "Bạn viết thêm vài dòng cảm nhận nhé.";
     } else {
       if (!isPhone(rec.phone) && !isEmail(rec.email)) {
-        errors.phone = "Bạn để lại số điện thoại hoặc email để Lam Trà liên lạc.";
+        errors.phone = "Bạn để lại số điện thoại hoặc email để Hydron liên lạc.";
       }
       if (type === "lien-he" && rec.message.length < 5) {
         errors.message = "Bạn ghi nội dung cần hỏi nhé.";

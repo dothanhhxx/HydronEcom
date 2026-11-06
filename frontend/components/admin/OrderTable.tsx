@@ -105,7 +105,7 @@ export function OrderTable() {
           : "Đã hủy";
 
       const itemsSummary = (o.items || [])
-        .map((it) => `${it.name} (${it.variant || ""}) x${it.qty}`)
+        .map((it) => `${it.name} (${it.variant || ""}${it.customLabel ? "; " + it.customLabel : ""}) x${it.qty}`)
         .join("; ");
 
       return [
@@ -135,7 +135,7 @@ export function OrderTable() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", `LamTra_DonHang_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute("download", `Hydron_DonHang_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -157,7 +157,7 @@ export function OrderTable() {
         <div className="lt-admin-metrics-grid">
           <div className="lt-admin-metric-card">
             <div className="lt-metric-label" style={{ fontSize: 13, color: "#6B7280" }}>Doanh thu tạm tính</div>
-            <div className="lt-metric-value" style={{ fontSize: 22, fontWeight: 700, color: "#0D2219", marginTop: 4 }}>
+            <div className="lt-metric-value" style={{ fontSize: 22, fontWeight: 700, color: "#062F3C", marginTop: 4 }}>
               {formatVND(metrics.totalRevenue)}
             </div>
             <div className="lt-metric-sub" style={{ fontSize: 12, color: "#10B981", marginTop: 4 }}>{metrics.totalOrders} đơn hàng tổng cộng</div>
@@ -184,7 +184,7 @@ export function OrderTable() {
             <div className="lt-metric-value" style={{ fontSize: 22, fontWeight: 700, color: "#059669", marginTop: 4 }}>
               {metrics.completedCount}
             </div>
-            <div className="lt-metric-sub" style={{ fontSize: 12, color: "#6B7280", marginTop: 4 }}>Khách đã nhận trà</div>
+            <div className="lt-metric-sub" style={{ fontSize: 12, color: "#6B7280", marginTop: 4 }}>Khách đã nhận hàng</div>
           </div>
         </div>
       )}
@@ -215,7 +215,7 @@ export function OrderTable() {
                   padding: "7px 14px",
                   borderRadius: 6,
                   border: active ? "1px solid var(--primary)" : "1px solid #E5E7EB",
-                  background: active ? "#0D2219" : "#FFFFFF",
+                  background: active ? "#062F3C" : "#FFFFFF",
                   color: active ? "#FFFFFF" : "#374151",
                   fontSize: 13,
                   fontWeight: active ? 600 : 500,
@@ -243,7 +243,7 @@ export function OrderTable() {
                 border: "1px solid #D1D5DB",
                 fontSize: 13.5,
                 outline: "none",
-                background: "#FAF8F5",
+                background: "#FFFDF8",
                 minWidth: 0,
               }}
             />
@@ -254,7 +254,7 @@ export function OrderTable() {
                 padding: "0 16px",
                 borderRadius: 6,
                 border: 0,
-                background: "#0D2219",
+                background: "#062F3C",
                 color: "#FFFFFF",
                 fontSize: 13,
                 fontWeight: 600,
@@ -275,7 +275,7 @@ export function OrderTable() {
               borderRadius: 6,
               border: "1px solid #D1D5DB",
               background: "#FFFFFF",
-              color: "#047857",
+              color: "#05708F",
               fontSize: 13,
               fontWeight: 600,
               display: "inline-flex",
@@ -321,7 +321,7 @@ export function OrderTable() {
                 <tbody>
                   {orders.map((o) => (
                     <tr key={o.code} style={{ borderBottom: "1px solid #F3F4F6", transition: "background 120ms ease" }}>
-                      <td style={{ padding: "14px 16px", fontWeight: 700, color: "#0D2219" }}>
+                      <td style={{ padding: "14px 16px", fontWeight: 700, color: "#062F3C" }}>
                         #{o.code}
                         {o.gift?.wrap && (
                           <span title="Có gói quà thiệp" style={{ marginLeft: 4, cursor: "help" }}>🎁</span>
@@ -332,7 +332,7 @@ export function OrderTable() {
                       </td>
                       <td style={{ padding: "14px 16px" }}>
                         <div style={{ fontWeight: 600, color: "#111827" }}>{o.buyer.name}</div>
-                        <a href={`tel:${o.buyer.phone}`} style={{ fontSize: 12.5, color: "#047857", textDecoration: "none" }}>
+                        <a href={`tel:${o.buyer.phone}`} style={{ fontSize: 12.5, color: "#05708F", textDecoration: "none" }}>
                           {o.buyer.phone}
                         </a>
                         {o.internalNote && (
@@ -343,7 +343,7 @@ export function OrderTable() {
                       </td>
                       <td style={{ padding: "14px 16px", color: "#374151" }}>{o.province}</td>
                       <td style={{ padding: "14px 16px" }}>
-                        <span style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", color: o.payment === "vietqr" ? "#047857" : "#B45309" }}>
+                        <span style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", color: o.payment === "vietqr" ? "#05708F" : "#B45309" }}>
                           {o.payment === "vietqr" ? "VietQR" : "COD"}
                         </span>
                       </td>
@@ -378,7 +378,7 @@ export function OrderTable() {
                                 padding: "6px 12px",
                                 borderRadius: 6,
                                 border: 0,
-                                background: "#047857",
+                                background: "#05708F",
                                 color: "#FFFFFF",
                                 fontSize: 12.5,
                                 fontWeight: 600,
@@ -422,7 +422,7 @@ export function OrderTable() {
                 {/* Header row: Code, status, time */}
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <span style={{ fontSize: 15, fontWeight: 700, color: "#0D2219" }}>
+                    <span style={{ fontSize: 15, fontWeight: 700, color: "#062F3C" }}>
                       #{o.code}
                     </span>
                     {o.gift?.wrap && (
@@ -433,7 +433,7 @@ export function OrderTable() {
                 </div>
 
                 {/* Customer row with 1-tap call & zalo */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, padding: "8px 10px", background: "#FAF8F5", borderRadius: 8, border: "1px solid #EFE8DC" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, padding: "8px 10px", background: "#FFFDF8", borderRadius: 8, border: "1px solid #EFE8DC" }}>
                   <div>
                     <div style={{ fontSize: 14, fontWeight: 600, color: "#111827" }}>{o.buyer.name}</div>
                     <div style={{ fontSize: 12, color: "#6B7280" }}>{o.province}</div>
@@ -447,7 +447,7 @@ export function OrderTable() {
                         gap: 4,
                         padding: "6px 10px",
                         borderRadius: 6,
-                        background: "#047857",
+                        background: "#05708F",
                         color: "#FFFFFF",
                         fontSize: 12,
                         fontWeight: 600,
@@ -491,7 +491,7 @@ export function OrderTable() {
                         padding: "2px 7px",
                         borderRadius: 4,
                         background: o.payment === "vietqr" ? "rgba(4, 120, 87, 0.1)" : "rgba(180, 83, 9, 0.1)",
-                        color: o.payment === "vietqr" ? "#047857" : "#B45309",
+                        color: o.payment === "vietqr" ? "#05708F" : "#B45309",
                         border: `1px solid ${o.payment === "vietqr" ? "rgba(4, 120, 87, 0.25)" : "rgba(180, 83, 9, 0.25)"}`,
                       }}
                     >
@@ -502,7 +502,7 @@ export function OrderTable() {
                     </span>
                   </div>
 
-                  <div style={{ fontSize: 16, fontWeight: 800, color: "#0D2219" }}>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: "#062F3C" }}>
                     {formatVND(o.totals.total)}
                   </div>
                 </div>
@@ -541,7 +541,7 @@ export function OrderTable() {
                         height: 42,
                         borderRadius: 6,
                         border: 0,
-                        background: "#047857",
+                        background: "#05708F",
                         color: "#FFFFFF",
                         fontSize: 13,
                         fontWeight: 700,

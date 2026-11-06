@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { Button, Icon, Input, Panel, QuantityStepper, Skeleton, formatVND } from "@/components/ds";
-import { TeaGrid } from "@/components/catalog/TeaCard";
+import { ProductGridList } from "@/components/catalog/ProductCard";
 import { useCart } from "@/lib/cart";
-import { COUPONS, FREE_SHIP_MIN, checkCoupon, quote } from "@/lib/checkout";
+import { COUPONS, CUSTOM_LEAD_TIME, FREE_SHIP_MIN, SHIPPING_FEE, checkCoupon, quote } from "@/lib/checkout";
 import { bestSellers } from "@/lib/products";
 import { ItemRow, Totals } from "./Summary";
 
@@ -36,7 +36,7 @@ function CouponBox() {
   return (
     <form onSubmit={(e) => { e.preventDefault(); apply(); }} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
       <div style={{ flex: 1 }}>
-        <Input aria-label="Mã giảm giá" placeholder="Nhập mã, ví dụ LAMTRA10" value={draft} onChange={(e) => { setDraft(e.target.value); setError(undefined); }} error={error} style={{ textTransform: "uppercase" }} />
+        <Input aria-label="Mã giảm giá" placeholder="Nhập mã, ví dụ HYDRON10" value={draft} onChange={(e) => { setDraft(e.target.value); setError(undefined); }} error={error} style={{ textTransform: "uppercase" }} />
       </div>
       <Button type="submit" variant="secondary" disabled={!draft.trim()} style={{ height: 48 }}>Áp dụng</Button>
     </form>
@@ -44,7 +44,7 @@ function CouponBox() {
 }
 
 export default function CartPage() {
-  const { items, ready, setQty, remove, coupon } = useCart();
+  const { items, ready, setQty, remove, coupon, products } = useCart();
   const q = quote({ items, coupon });
 
   if (!ready)
@@ -64,11 +64,11 @@ export default function CartPage() {
       <div className="lt-container" style={{ paddingTop: "16px", paddingBottom: "80px" }}>
         <Panel style={{ padding: "36px 28px", maxWidth: 560, display: "flex", flexDirection: "column", gap: 16, alignItems: "flex-start" }}>
           <Icon name="shopping-bag" size={32} color="var(--accent)" />
-          <p style={{ margin: 0, fontSize: 16, lineHeight: 1.6, color: "var(--text-body)" }}>Giỏ trà của bạn đang trống. Bạn ghé qua vài loại trà Lam Trà đang có nhé.</p>
-          <Button href="/san-pham" iconRight="arrow-right">Xem các loại trà</Button>
+          <p style={{ margin: 0, fontSize: 16, lineHeight: 1.6, color: "var(--text-body)" }}>Giỏ hàng đang trống. Chọn một chiếc bình, hoặc tự thiết kế bình in tên của bạn.</p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}><Button href="/san-pham" iconRight="arrow-right">Xem các mẫu bình</Button><Button href="/thiet-ke-3d" variant="secondary" iconLeft="pencil">Thiết kế 3D</Button></div>
         </Panel>
         <h2 style={{ margin: "56px 0 24px", fontSize: 24, fontWeight: 500, color: "var(--text-strong)" }}>Được mua nhiều</h2>
-        <TeaGrid products={bestSellers()} />
+        <ProductGridList products={bestSellers(products)} four />
       </div>
     );
 
@@ -84,7 +84,7 @@ export default function CartPage() {
         ) : (
           <Panel tone="info" style={{ padding: "12px 16px", fontSize: 14, display: "flex", gap: 10, alignItems: "center" }}>
             <Icon name="circle-check" size={20} color="var(--primary)" />
-            Đơn của bạn được miễn phí vận chuyển và gói quà.
+            Đơn của bạn được miễn phí vận chuyển.
           </Panel>
         )}
         <div style={{ marginTop: 8 }}>
@@ -101,13 +101,19 @@ export default function CartPage() {
             </ItemRow>
           ))}
         </div>
+        {items.some((i) => i.custom) && (
+          <p style={{ marginTop: 16, fontSize: 13.5, color: "var(--text-muted)", display: "flex", gap: 8 }}>
+            <Icon name="info" size={16} />
+            Bình in riêng cần thêm {CUSTOM_LEAD_TIME} để in. Muốn sửa thiết kế: xóa dòng đó và thiết kế lại trong trình 3D.
+          </p>
+        )}
       </div>
 
       <aside style={{ flex: "1 1 320px", maxWidth: 440, minWidth: 0, position: "sticky", top: 88 }}>
         <Panel style={{ padding: 20, display: "flex", flexDirection: "column", gap: 18 }}>
           <h2 style={{ margin: 0, fontSize: 17, fontWeight: 500, color: "var(--text-strong)" }}>Tóm tắt đơn</h2>
           <CouponBox />
-          <Totals q={q} shippingNote="Phí từ 15.000₫ tùy tỉnh. Miễn phí cho đơn từ 500.000₫." />
+          <Totals q={q} shippingNote={`Phí từ ${formatVND(SHIPPING_FEE["noi-tinh"])} tùy tỉnh. Miễn phí cho đơn từ ${formatVND(FREE_SHIP_MIN)}.`} />
           <Button href="/thanh-toan" size="lg" fullWidth iconRight="arrow-right">Đặt hàng</Button>
           <span style={{ fontSize: 12, color: "var(--text-muted)", textAlign: "center" }}>Thanh toán VietQR hoặc COD · Không cần tạo tài khoản</span>
         </Panel>

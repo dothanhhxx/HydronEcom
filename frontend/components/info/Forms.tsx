@@ -60,12 +60,12 @@ export function ContactForm() {
     <MessageForm
       type="lien-he"
       submitLabel="Gửi tin nhắn"
-      done="Lam Trà đã nhận tin nhắn của bạn và sẽ trả lời trong giờ làm việc, thường trong vài giờ."
+      done="Hydron đã nhận tin nhắn và sẽ trả lời trong giờ làm việc, thường trong vài giờ."
       fields={[
         { name: "name", label: "Họ và tên", required: true, half: true },
         { name: "phone", label: "Số điện thoại", type: "tel", half: true, hint: "Hoặc để lại email bên dưới." },
         { name: "email", label: "Email", type: "email" },
-        { name: "message", label: "Bạn cần Lam Trà giúp gì?", required: true, textarea: true, placeholder: "Tư vấn chọn trà, hỏi về đơn hàng, hợp tác…" },
+        { name: "message", label: "Bạn cần Hydron giúp gì?", required: true, textarea: true, placeholder: "Tư vấn chọn bình, hỏi về đơn hàng, in logo…" },
       ]}
     />
   );
@@ -76,16 +76,16 @@ export function QuoteForm() {
     <MessageForm
       type="bao-gia"
       submitLabel="Nhận báo giá"
-      done="Cảm ơn bạn. Lam Trà sẽ gửi báo giá và mẫu hộp trong vòng một ngày làm việc."
+      done="Cảm ơn bạn. Hydron sẽ gửi báo giá và bản in thử trong vòng một ngày làm việc."
       fields={[
         { name: "name", label: "Người liên hệ", required: true, half: true },
         { name: "company", label: "Công ty", half: true },
         { name: "phone", label: "Số điện thoại", type: "tel", required: true, half: true },
         { name: "email", label: "Email", type: "email", half: true },
-        { name: "quantity", label: "Số lượng dự kiến", half: true, options: ["10 – 30 hộp", "30 – 100 hộp", "100 – 300 hộp", "Trên 300 hộp"] },
-        { name: "budget", label: "Ngân sách mỗi phần quà", half: true, options: ["Dưới 300.000₫", "300.000₫ – 600.000₫", "600.000₫ – 1.000.000₫", "Trên 1.000.000₫"] },
+        { name: "quantity", label: "Số lượng dự kiến", half: true, options: ["20 – 50 bình", "50 – 100 bình", "100 – 300 bình", "Trên 300 bình"] },
+        { name: "product", label: "Mẫu bình quan tâm", half: true, options: ["Hydron Classic", "Hydron Sport", "Hydron Office", "Hydron Trek", "Hydron Kids", "Chưa chọn, cần tư vấn"] },
         { name: "date", label: "Ngày cần nhận hàng", type: "date", half: true },
-        { name: "message", label: "Yêu cầu thêm", textarea: true, placeholder: "In logo công ty lên hộp, thiệp riêng, giao nhiều địa chỉ…" },
+        { name: "message", label: "Yêu cầu thêm", textarea: true, placeholder: "In logo một mặt, tên từng người mặt còn lại; màu bình; giao nhiều địa chỉ…" },
       ]}
     />
   );

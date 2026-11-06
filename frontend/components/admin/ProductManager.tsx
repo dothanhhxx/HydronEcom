@@ -5,7 +5,8 @@ import Link from "next/link";
 import { formatVND, Icon, Dialog } from "@/components/ds";
 import { ProductEditModal } from "./ProductEditModal";
 import type { Product } from "@/shared";
-import { CATEGORIES, PRODUCTS, photo } from "@/lib/products";
+import { CATEGORIES, PRODUCTS } from "@/lib/products";
+import ProductVisual, { tintFor } from "@/components/bottle/ProductVisual";
 
 export function ProductManager() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -96,7 +97,7 @@ export function ProductManager() {
         populatePrices(data.products);
         setIsFallback(false);
         if (!silent) {
-          alert(`Đã đồng bộ thành công ${data.count || data.products.length} sản phẩm trà vào hệ thống!`);
+          alert(`Đã đồng bộ thành công ${data.count || data.products.length} sản phẩm Hydron vào hệ thống!`);
         }
       } else {
         // Nếu API backend chưa sẵn sàng, nạp trực tiếp danh mục chuẩn vào giao diện
@@ -196,7 +197,7 @@ export function ProductManager() {
         p.slug.toLowerCase().includes(q) ||
         p.kind.toLowerCase().includes(q) ||
         p.note.toLowerCase().includes(q) ||
-        p.origin.toLowerCase().includes(q);
+        p.colors.some((c) => c.name.toLowerCase().includes(q));
       if (!match) return false;
     }
     return true;
@@ -204,7 +205,7 @@ export function ProductManager() {
 
   const totalActive = products.filter((p) => p.active !== false).length;
   const totalInactive = products.filter((p) => p.active === false).length;
-  const totalGift = products.filter((p) => p.category === "qua-tang").length;
+  const totalGift = products.filter((p) => p.category !== "binh").length;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16, fontFamily: "var(--font-ui)" }}>
@@ -254,8 +255,8 @@ export function ProductManager() {
               style={{
                 padding: "6px 14px",
                 borderRadius: 6,
-                border: "1px solid #0D2219",
-                background: "#0D2219",
+                border: "1px solid #062F3C",
+                background: "#062F3C",
                 color: "#FFFFFF",
                 fontWeight: 600,
                 fontSize: 12.5,
@@ -271,7 +272,7 @@ export function ProductManager() {
       {/* Top Banner & Metrics - 2x2 on Mobile */}
       <div className="lt-admin-metrics-grid">
         <div className="lt-admin-metric-card">
-          <div className="lt-metric-label" style={{ fontSize: 13, color: "#6B7280" }}>Tổng danh mục trà</div>
+          <div className="lt-metric-label" style={{ fontSize: 13, color: "#6B7280" }}>Tổng số sản phẩm</div>
           <div className="lt-metric-value" style={{ fontSize: 22, fontWeight: 700, color: "#111827", marginTop: 4 }}>
             {products.length} dòng
           </div>
@@ -280,7 +281,7 @@ export function ProductManager() {
 
         <div className="lt-admin-metric-card">
           <div className="lt-metric-label" style={{ fontSize: 13, color: "#6B7280" }}>Đang mở bán</div>
-          <div className="lt-metric-value" style={{ fontSize: 22, fontWeight: 700, color: "#047857", marginTop: 4 }}>
+          <div className="lt-metric-value" style={{ fontSize: 22, fontWeight: 700, color: "#05708F", marginTop: 4 }}>
             {totalActive}
           </div>
           <div className="lt-metric-sub" style={{ fontSize: 12, color: "#10B981", marginTop: 4 }}>Hiển thị ra Storefront</div>
@@ -295,11 +296,11 @@ export function ProductManager() {
         </div>
 
         <div className="lt-admin-metric-card">
-          <div className="lt-metric-label" style={{ fontSize: 13, color: "#6B7280" }}>Hộp quà biếu</div>
+          <div className="lt-metric-label" style={{ fontSize: 13, color: "#6B7280" }}>Phụ kiện</div>
           <div className="lt-metric-value" style={{ fontSize: 22, fontWeight: 700, color: "#92400E", marginTop: 4 }}>
             {totalGift}
           </div>
-          <div className="lt-metric-sub" style={{ fontSize: 12, color: "#D97706", marginTop: 4 }}>Set quà Doanh nghiệp</div>
+          <div className="lt-metric-sub" style={{ fontSize: 12, color: "#D97706", marginTop: 4 }}>Túi, quai đeo</div>
         </div>
       </div>
 
@@ -324,8 +325,8 @@ export function ProductManager() {
             style={{
               padding: "7px 14px",
               borderRadius: 6,
-              border: `1px solid ${categoryFilter === "" ? "#0D2219" : "#E5E7EB"}`,
-              background: categoryFilter === "" ? "#0D2219" : "#FFFFFF",
+              border: `1px solid ${categoryFilter === "" ? "#062F3C" : "#E5E7EB"}`,
+              background: categoryFilter === "" ? "#062F3C" : "#FFFFFF",
               color: categoryFilter === "" ? "#FFFFFF" : "#4B5563",
               fontWeight: categoryFilter === "" ? 600 : 500,
               fontSize: 13,
@@ -345,8 +346,8 @@ export function ProductManager() {
                 style={{
                   padding: "7px 14px",
                   borderRadius: 6,
-                  border: `1px solid ${active ? "#0D2219" : "#E5E7EB"}`,
-                  background: active ? "#0D2219" : "#FFFFFF",
+                  border: `1px solid ${active ? "#062F3C" : "#E5E7EB"}`,
+                  background: active ? "#062F3C" : "#FFFFFF",
                   color: active ? "#FFFFFF" : "#4B5563",
                   fontWeight: active ? 600 : 500,
                   fontSize: 13,
@@ -370,7 +371,7 @@ export function ProductManager() {
                 padding: "0 10px",
                 borderRadius: 6,
                 border: "1px solid #D1D5DB",
-                background: "#FAF8F5",
+                background: "#FFFDF8",
                 fontSize: 13,
                 flexShrink: 0,
               }}
@@ -382,7 +383,7 @@ export function ProductManager() {
 
             <input
               type="text"
-              placeholder="Tìm tên trà, vùng, ghi chú..."
+              placeholder="Tìm tên, loại, màu…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               style={{
@@ -390,7 +391,7 @@ export function ProductManager() {
                 padding: "0 12px",
                 borderRadius: 6,
                 border: "1px solid #D1D5DB",
-                background: "#FAF8F5",
+                background: "#FFFDF8",
                 fontSize: 13,
                 flex: 1,
                 minWidth: 0,
@@ -418,7 +419,7 @@ export function ProductManager() {
                 cursor: isSyncing ? "default" : "pointer",
                 opacity: isSyncing ? 0.7 : 1,
               }}
-              title="Đồng bộ danh mục trà chuẩn vào trang quản trị"
+              title="Đồng bộ danh mục sản phẩm mặc định"
             >
               <Icon name="rotate-ccw" size={14} />
               <span>{isSyncing ? "Đang đồng bộ..." : "Đồng bộ sản phẩm"}</span>
@@ -435,8 +436,8 @@ export function ProductManager() {
                 padding: "0 16px",
                 borderRadius: 6,
                 border: 0,
-                background: "linear-gradient(135deg, #0D2219, #1B4332)",
-                color: "#F7F0E3",
+                background: "linear-gradient(135deg, #062F3C, #1B4332)",
+                color: "#FDF2DF",
                 fontSize: 13.5,
                 fontWeight: 600,
                 display: "inline-flex",
@@ -476,8 +477,8 @@ export function ProductManager() {
                 padding: "10px 18px",
                 borderRadius: 6,
                 border: 0,
-                background: "linear-gradient(135deg, #DFBE89, #BC9A6C)",
-                color: "#0D2219",
+                background: "#FDF2DF",
+                color: "#062F3C",
                 fontWeight: 700,
                 fontSize: 13.5,
                 cursor: "pointer",
@@ -523,7 +524,7 @@ export function ProductManager() {
                   <tr style={{ background: "#F9FAFB", borderBottom: "1px solid #E5E7EB", color: "#4B5563" }}>
                     <th style={{ padding: "12px 16px" }}>Ảnh</th>
                     <th style={{ padding: "12px 16px" }}>Sản phẩm</th>
-                    <th style={{ padding: "12px 16px" }}>Loại trà</th>
+                    <th style={{ padding: "12px 16px" }}>Loại</th>
                     <th style={{ padding: "12px 16px" }}>Giá bán cơ sở (VND)</th>
                     <th style={{ padding: "12px 16px" }}>Giá niêm yết cũ (VND)</th>
                     <th style={{ padding: "12px 16px", textAlign: "center" }}>Trạng thái</th>
@@ -540,16 +541,8 @@ export function ProductManager() {
                       <tr key={p.slug} style={{ borderBottom: "1px solid #F3F4F6", transition: "background 120ms ease" }}>
                         {/* Image Thumbnail */}
                         <td style={{ padding: "12px 16px", width: 64 }}>
-                          <div style={{ width: 48, height: 48, borderRadius: 6, overflow: "hidden", border: "1px solid #E5E7EB", background: "#FAF8F5" }}>
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                              src={photo(p.ph)}
-                              alt={p.name}
-                              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                              onError={(e) => {
-                                (e.currentTarget as HTMLImageElement).src = "/assets/photos/moccau.jpg";
-                              }}
-                            />
+                          <div style={{ width: 48, height: 48, borderRadius: 6, overflow: "hidden", border: "1px solid #E5E7EB", background: "#FFFDF8" }}>
+                            <span style={{ position: "relative", display: "block", width: "100%", height: "100%", background: tintFor(p) }}><ProductVisual product={p} /></span>
                           </div>
                         </td>
 
@@ -567,7 +560,7 @@ export function ProductManager() {
                           <span style={{ fontSize: 12.5, fontWeight: 500, color: "#374151", background: "#F3F4F6", padding: "3px 8px", borderRadius: 4 }}>
                             {p.kind}
                           </span>
-                          <div style={{ fontSize: 11.5, color: "#9CA3AF", marginTop: 3 }}>{p.origin}</div>
+                          <div style={{ fontSize: 11.5, color: "#9CA3AF", marginTop: 3 }}>{p.sizes.length ? p.sizes.join("/") + "ml" : "Một cỡ"} · {p.colors.length} màu</div>
                         </td>
 
                         {/* Base Price inline */}
@@ -589,10 +582,10 @@ export function ProductManager() {
                                 padding: "0 8px",
                                 borderRadius: 6,
                                 border: "1px solid #D1D5DB",
-                                background: "#FAF8F5",
+                                background: "#FFFDF8",
                                 fontSize: 13.5,
                                 fontWeight: 600,
-                                color: "#0D2219",
+                                color: "#062F3C",
                               }}
                             />
                             <button
@@ -604,7 +597,7 @@ export function ProductManager() {
                                 padding: "6px 10px",
                                 borderRadius: 6,
                                 border: 0,
-                                background: "#0D2219",
+                                background: "#062F3C",
                                 color: "#FFFFFF",
                                 fontSize: 12,
                                 fontWeight: 600,
@@ -635,7 +628,7 @@ export function ProductManager() {
                               padding: "0 8px",
                               borderRadius: 6,
                               border: "1px solid #D1D5DB",
-                              background: "#FAF8F5",
+                              background: "#FFFDF8",
                               fontSize: 13,
                             }}
                           />
@@ -651,7 +644,7 @@ export function ProductManager() {
                               fontSize: 12,
                               fontWeight: 600,
                               background: isActive ? "#ECFDF5" : "#FEF2F2",
-                              color: isActive ? "#047857" : "#B91C1C",
+                              color: isActive ? "#05708F" : "#B91C1C",
                               border: `1px solid ${isActive ? "#A7F3D0" : "#FECACA"}`,
                             }}
                           >
@@ -693,7 +686,7 @@ export function ProductManager() {
                                 borderRadius: 6,
                                 border: "1px solid #D1D5DB",
                                 background: "#FFFFFF",
-                                color: isActive ? "#DC2626" : "#047857",
+                                color: isActive ? "#DC2626" : "#05708F",
                                 fontSize: 12.5,
                                 fontWeight: 500,
                                 cursor: "pointer",
@@ -761,16 +754,8 @@ export function ProductManager() {
                 <div key={p.slug} className="lt-admin-card-item">
                   {/* Top: Photo thumbnail, Name, Category & Status */}
                   <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-                    <div style={{ width: 56, height: 56, borderRadius: 8, overflow: "hidden", border: "1px solid #E5E7EB", background: "#FAF8F5", flexShrink: 0 }}>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={photo(p.ph)}
-                        alt={p.name}
-                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                        onError={(e) => {
-                          (e.currentTarget as HTMLImageElement).src = "/assets/photos/moccau.jpg";
-                        }}
-                      />
+                    <div style={{ width: 56, height: 56, borderRadius: 8, overflow: "hidden", border: "1px solid #E5E7EB", background: "#FFFDF8", flexShrink: 0 }}>
+                      <span style={{ position: "relative", display: "block", width: "100%", height: "100%", background: tintFor(p) }}><ProductVisual product={p} /></span>
                     </div>
 
                     <div style={{ flex: 1, minWidth: 0 }}>
@@ -785,7 +770,7 @@ export function ProductManager() {
                             fontSize: 11,
                             fontWeight: 600,
                             background: isActive ? "#ECFDF5" : "#FEF2F2",
-                            color: isActive ? "#047857" : "#B91C1C",
+                            color: isActive ? "#05708F" : "#B91C1C",
                             border: `1px solid ${isActive ? "#A7F3D0" : "#FECACA"}`,
                             flexShrink: 0,
                           }}
@@ -798,13 +783,13 @@ export function ProductManager() {
                         <span style={{ fontSize: 11.5, color: "#374151", background: "#F3F4F6", padding: "2px 6px", borderRadius: 4 }}>
                           {p.kind}
                         </span>
-                        <span style={{ fontSize: 11.5, color: "#9CA3AF" }}>{p.origin}</span>
+                        <span style={{ fontSize: 11.5, color: "#9CA3AF" }}>{p.sizes.length ? p.sizes.join("/") + "ml" : "Một cỡ"} · {p.colors.length} màu</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Inline Price Edit for Mobile */}
-                  <div style={{ background: "#FAF8F5", padding: "10px 12px", borderRadius: 8, border: "1px solid #EFE8DC", display: "flex", flexDirection: "column", gap: 8 }}>
+                  <div style={{ background: "#FFFDF8", padding: "10px 12px", borderRadius: 8, border: "1px solid #EFE8DC", display: "flex", flexDirection: "column", gap: 8 }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
                       <span style={{ fontSize: 12, fontWeight: 600, color: "#4B5563" }}>Giá cơ sở (150g):</span>
                       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -827,7 +812,7 @@ export function ProductManager() {
                             background: "#FFFFFF",
                             fontSize: 13.5,
                             fontWeight: 700,
-                            color: "#0D2219",
+                            color: "#062F3C",
                           }}
                         />
                         <button
@@ -839,7 +824,7 @@ export function ProductManager() {
                             padding: "0 10px",
                             borderRadius: 6,
                             border: 0,
-                            background: "#0D2219",
+                            background: "#062F3C",
                             color: "#FFFFFF",
                             fontSize: 12,
                             fontWeight: 600,
@@ -890,7 +875,7 @@ export function ProductManager() {
                         borderRadius: 6,
                         border: "1px solid #D1D5DB",
                         background: "#FFFFFF",
-                        color: isActive ? "#DC2626" : "#047857",
+                        color: isActive ? "#DC2626" : "#05708F",
                         fontSize: 12.5,
                         fontWeight: 600,
                         cursor: "pointer",

@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "Đặt hàng", robots: { index: fals
 export default function Page() {
   return (
     <>
-      <PageHeader title="Đặt hàng" crumbs={[{ label: "Đặt hàng" }]} desc="Không cần tài khoản. Lam Trà xác nhận qua Zalo trong 30 phút." />
+      <PageHeader plain title="Đặt hàng" crumbs={[{ label: "Đặt hàng" }]} desc="Không cần tài khoản. Hydron xác nhận qua Zalo trong 30 phút." />
       <CheckoutForm />
     </>
   );

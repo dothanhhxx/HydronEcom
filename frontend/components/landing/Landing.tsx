@@ -1,292 +1,247 @@
 "use client";
 
-import { useEffect, useRef, useState, type MouseEvent } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Button, Icon, IconButton, OptionPicker, Price, ProductImage, Rating } from "@/components/ds";
+import { useState } from "react";
+import Bottle3D from "@/components/bottle/Bottle3D";
+import BottleRender from "@/components/bottle/BottleRender";
+import { ProductGridList } from "@/components/catalog/ProductCard";
+import { Icon, formatVND } from "@/components/ds";
 import { useCart } from "@/lib/cart";
-import { DEFAULT_GRADE, DEFAULT_SIZE, GRADE_OPTIONS, PRODUCTS as STATIC_TEAS, SIZE_OPTIONS, photo, priceOf, variantLabel, type Product } from "@/lib/products";
+import { CUSTOM_LEAD_TIME, FREE_SHIP_MIN } from "@/lib/checkout";
+import type { Post } from "@/lib/posts";
+import { CATEGORIES, CUSTOM_TEXT_FEE, SIZE_INFO, priceRange, type Product } from "@/lib/products";
+import PostCover from "./PostCover";
+import { DuneSpotlight, MascotShowcase, SleeveShowcase } from "./Showcase";
 
-const pad = (n: number) => String(n).padStart(2, "0");
-
-export default function Landing({ products }: { products?: Product[] } = {}) {
-  const TEAS = products && products.length > 0 ? products : STATIC_TEAS;
-  const router = useRouter();
-  const { add } = useCart();
-  const [idx, setIdx] = useState(0);
-  const [size, setSize] = useState(DEFAULT_SIZE);
-  const [grade, setGrade] = useState(DEFAULT_GRADE);
-  const [added, setAdded] = useState(false);
-  const [fading, setFading] = useState(false);
-  const [loaded, setLoaded] = useState(false);
-  const [w, setW] = useState(1280);
-  const stageRef = useRef<HTMLElement>(null);
-  const t1 = useRef<ReturnType<typeof setTimeout>>(undefined);
-  const t2 = useRef<ReturnType<typeof setTimeout>>(undefined);
-
-  useEffect(() => {
-    const onResize = () => setW(window.innerWidth);
-    onResize();
-    window.addEventListener("resize", onResize);
-    const t0 = setTimeout(() => setLoaded(true), 60);
-    TEAS.forEach((t) => {
-      const i = new Image();
-      i.src = photo(t.ph);
-    });
-    return () => {
-      window.removeEventListener("resize", onResize);
-      [t0, t1.current, t2.current].forEach(clearTimeout);
-    };
-  }, []);
-
-  const scrollToStage = () => {
-    const el = stageRef.current;
-    if (!el) return;
-    window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 84, behavior: "smooth" });
-  };
-
-  const pick = (i: number) => {
-    const n = (i + TEAS.length) % TEAS.length;
-    if (n === idx) return;
-    clearTimeout(t1.current);
-    setFading(true);
-    setAdded(false);
-    t1.current = setTimeout(() => {
-      setIdx(n);
-      setFading(false);
-    }, 160);
-  };
-
-  const go = (i: number | null) => (e?: MouseEvent) => {
-    e?.preventDefault();
-    if (i != null) pick(i);
-    scrollToStage();
-  };
-
-  const addToCart = () => {
-    clearTimeout(t2.current);
-    add(tea.slug, size, grade);
-    setAdded(true);
-    t2.current = setTimeout(() => setAdded(false), 2200);
-  };
-  const buyNow = () => {
-    if (add(tea.slug, size, grade)) router.push("/gio-hang");
-  };
-
-  const safeIdx = Math.min(idx, Math.max(0, TEAS.length - 1));
-  const tea = TEAS[safeIdx] || TEAS[0];
-  const isDesktop = w >= 1000;
-  const mobile = w < 720;
-  const price = tea ? priceOf(tea, size, grade) : 0;
-
-  const trust = [
-    { icon: "leaf", a: "Búp chè Tân Cương", b: "hái tay sáng sớm", divider: true },
-    { icon: "scale", a: "Rõ khối lượng", b: "và phân hạng", divider: !mobile },
-    { icon: "qr-code", a: "Thanh toán VietQR", b: "hoặc COD", divider: false },
-  ];
+function Hero({ products }: { products: Product[] }) {
+  const hero = products.find((p) => p.slug === "hydron-classic") ?? products.find((p) => p.customizable) ?? products[0];
+  const [colorId, setColorId] = useState(hero?.colors[0]?.id ?? "");
+  const color = hero?.colors.find((c) => c.id === colorId) ?? hero?.colors[0];
+  const lows = products.filter((p) => p.category === "binh").map((p) => priceRange(p)[0]);
+  const from = lows.length ? Math.min(...lows) : 150000;
 
   return (
-    <div>
-
-      <section
-        style={{
-          position: "relative", overflow: "hidden", background: "var(--reu-900)",
-          minHeight: mobile ? 620 : "min(640px, 82vh)", display: "flex", alignItems: mobile ? "flex-end" : "center",
-        }}
-      >
-        <div
-          style={{
-            position: "absolute", inset: 0, backgroundImage: "url('/assets/photos/hero.jpg')", backgroundSize: "cover",
-            backgroundPosition: mobile ? "30% center" : "center", transform: `scale(${loaded ? 1 : 1.04})`,
-            transition: "transform 1600ms cubic-bezier(.2,.7,.2,1)",
-          }}
-        />
-        <div
-          style={{
-            position: "absolute", inset: 0,
-            background: mobile
-              ? "linear-gradient(0deg, rgba(25,36,26,.96) 0%, rgba(36,52,31,.82) 50%, rgba(36,52,31,.35) 100%)"
-              : "linear-gradient(90deg, rgba(25,36,26,.94) 0%, rgba(36,52,31,.82) 38%, rgba(36,52,31,.25) 72%, rgba(36,52,31,.1) 100%), linear-gradient(0deg, rgba(25,36,26,.6) 0%, transparent 30%)",
-          }}
-        />
-        <div style={{ position: "relative", width: "100%", maxWidth: 1240, margin: "0 auto", padding: mobile ? "88px 20px 112px" : "72px clamp(24px,3vw,40px) 150px" }}>
-          <div
-            style={{
-              maxWidth: 580, opacity: loaded ? 1 : 0, transform: `translateY(${loaded ? "0px" : "8px"})`,
-              transition: "opacity 600ms cubic-bezier(.2,.7,.2,1),transform 600ms cubic-bezier(.2,.7,.2,1)",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
-              <span style={{ fontSize: 11, letterSpacing: ".2em", textTransform: "uppercase", fontWeight: 500, color: "var(--tra-300)", whiteSpace: "nowrap", flexShrink: 0 }}>Tân Cương · Thái Nguyên</span>
-              <span style={{ flex: "0 0 64px", height: 1, background: "var(--tra-400)", opacity: 0.7 }} />
-            </div>
-            <h1
-              style={{
-                margin: 0,
-                fontSize: "clamp(40px, 4.8vw, 62px)",
-                lineHeight: 1.1,
-                fontWeight: 600,
-                letterSpacing: "0.015em",
-                fontFamily: "var(--font-display)",
-                color: "var(--logo-cream)",
-                textWrap: "balance",
-              }}
-            >
-              Trọn vị trà Việt,
-              <br />
-              <span style={{ color: "var(--tra-300)" }}>trọn tấm lòng trao gửi.</span>
-            </h1>
-            <p style={{ margin: "18px 0 0", maxWidth: 460, fontSize: "clamp(15px,1.1vw,16px)", lineHeight: 1.65, color: "var(--reu-100)", textWrap: "pretty" }}>
-              Búp chè Tân Cương hái sáng sớm, sao tay trên chảo gang. Mỗi gói trà ghi rõ khối lượng và phân hạng, để bạn chọn đúng vị cho mình hay cho người thân.
-            </p>
-            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "12px 24px", marginTop: 26 }}>
-              <Button variant="accent" iconRight="arrow-right" onClick={go(null)}>
-                Mua ngay
-              </Button>
-              <a href="#tra-noi-bat" onClick={go(TEAS.findIndex((t) => t.category === "qua-tang"))} className="lt-gift-link">
-                <Icon name="gift" size={18} />
-                Xem hộp quà biếu
-              </a>
-            </div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "14px 0", marginTop: 34 }}>
-              {trust.map((t) => (
-                <div key={t.icon} style={{ display: "flex", alignItems: "center", gap: 10, paddingRight: 18, marginRight: 18, borderRight: t.divider ? "1px solid rgba(188,154,108,.3)" : 0 }}>
-                  <span style={{ width: 34, height: 34, flexShrink: 0, borderRadius: 999, border: "1px solid rgba(188,154,108,.6)", color: "var(--tra-300)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <Icon name={t.icon} size={16} />
-                  </span>
-                  <span style={{ fontSize: 12.5, lineHeight: 1.4, color: "var(--logo-cream)" }}>
-                    {t.a}
-                    <br />
-                    <span style={{ color: "var(--reu-200)" }}>{t.b}</span>
-                  </span>
-                </div>
-              ))}
-            </div>
+    <section className="hd-hero" aria-labelledby="hero-title">
+      <div className="lt-container hd-hero-grid">
+        <div>
+          <h1 id="hero-title">
+            Bình giữ nhiệt in tên riêng, thiết kế 3D ngay trên web
+          </h1>
+          <p className="hd-hero-lead">
+            Thép 304 hai lớp, giữ lạnh 24 giờ. Chọn dung tích 500 – 900ml, chọn màu, gõ tên của bạn rồi xoay xem trước trước khi đặt.
+          </p>
+          <ul className="hd-hero-facts">
+            <li><strong>{formatVND(from)}</strong><span>giá từ, bình 500ml</span></li>
+            <li><strong>24 giờ</strong><span>giữ lạnh, 12 giờ giữ nóng</span></li>
+            <li><strong>{CUSTOM_LEAD_TIME}</strong><span>in tên và gửi đi</span></li>
+          </ul>
+          <div className="hd-hero-actions">
+            <Link href="/thiet-ke-3d" className="hd-btn hd-btn-primary"><Icon name="pencil" size={18} />Thiết kế bình của bạn</Link>
+            <Link href="/san-pham?danh-muc=binh" className="hd-btn hd-btn-line">Xem các mẫu bình</Link>
           </div>
         </div>
-      </section>
-
-      <section id="tra-noi-bat" aria-label="Trà nổi bật" ref={stageRef} style={{ position: "relative", zIndex: 2, padding: "0 clamp(12px,3vw,40px) clamp(40px,5vw,64px)", marginTop: mobile ? -72 : -96 }}>
-        <div style={{ maxWidth: 1120, margin: "0 auto", background: "var(--surface-card)", border: "1px solid var(--border-hairline)", borderRadius: 10, boxShadow: "var(--shadow-lg)", overflow: "hidden", display: "flex", flexWrap: "wrap" }}>
-          {isDesktop ? (
-            <div style={{ flex: "0 0 220px", padding: "16px 12px", background: "var(--logo-green)", display: "flex", flexDirection: "column", gap: 6 }}>
-              <div style={{ fontSize: 11, letterSpacing: ".16em", textTransform: "uppercase", color: "var(--tra-300)", padding: "4px 10px 12px" }}>Trà nổi bật</div>
-              {TEAS.map((t, i) => (
-                <button
-                  key={t.slug}
-                  type="button"
-                  onClick={() => pick(i)}
-                  className={i === idx ? "lt-tea-item" : "lt-tea-item lt-tea-idle"}
-                  style={{
-                    display: "flex", alignItems: "center", gap: 10, padding: "6px 8px", borderRadius: 6,
-                    border: "1px solid " + (i === idx ? "rgba(188,154,108,.7)" : "rgba(253,237,216,.1)"),
-                    background: i === idx ? "rgba(188,154,108,.16)" : undefined,
-                    color: "var(--logo-cream)", textAlign: "left", cursor: "pointer", fontFamily: "inherit",
-                    transition: "background 200ms,border-color 200ms",
-                  }}
-                >
-                  <span style={{ width: 38, height: 38, flexShrink: 0, borderRadius: 4, backgroundImage: `url('${photo(t.ph)}')`, backgroundSize: "cover", backgroundPosition: "center" }} />
-                  <span style={{ display: "flex", flexDirection: "column", gap: 2, minWidth: 0 }}>
-                    <span style={{ fontSize: 11, color: "var(--tra-300)", fontVariantNumeric: "tabular-nums" }}>{pad(i + 1)}</span>
-                    <span style={{ fontSize: 14, fontWeight: 500, lineHeight: 1.25 }}>{t.name}</span>
-                  </span>
-                </button>
-              ))}
+        {hero && color && (
+          <div className="hd-hero-stage">
+            <span className="hd-hero-disc" aria-hidden />
+            <span className="hd-hero-ring" aria-hidden />
+            <Bottle3D showcase shape={hero.shape} hex={color.hex} size="700" custom={{ text: "MINH ANH", font: "block", ink: color.hex === "#F1EEE8" || color.hex === "#E6D8BF" ? "#0B2A36" : "#FFFFFF", sticker: "giot" }} label={`Bình ${hero.name} màu ${color.name} in tên MINH ANH, xoay 3D`} />
+            <div className="hd-hero-tag" style={{ left: "2%", top: "20%" }}>
+              <strong>In tên +{formatVND(CUSTOM_TEXT_FEE)}</strong>
+              Tối đa 14 ký tự, 3 kiểu chữ
             </div>
-          ) : (
-            <div style={{ flex: "1 1 100%", display: "flex", gap: 8, overflowX: "auto", padding: 12, background: "var(--logo-green)", scrollbarWidth: "none" }}>
-              {TEAS.map((t, i) => (
-                <button
-                  key={t.slug}
-                  type="button"
-                  onClick={() => pick(i)}
-                  style={{
-                    flexShrink: 0, display: "flex", alignItems: "center", gap: 8, height: 44, padding: "0 14px 0 6px", borderRadius: 999,
-                    border: "1px solid " + (i === idx ? "rgba(188,154,108,.7)" : "rgba(253,237,216,.1)"),
-                    background: i === idx ? "rgba(188,154,108,.16)" : "transparent",
-                    color: "var(--logo-cream)", fontFamily: "inherit", fontSize: 13, fontWeight: 500, whiteSpace: "nowrap", cursor: "pointer",
-                  }}
-                >
-                  <span style={{ width: 32, height: 32, borderRadius: 999, backgroundImage: `url('${photo(t.ph)}')`, backgroundSize: "cover", backgroundPosition: "center" }} />
-                  {t.name}
-                </button>
-              ))}
+            <div className="hd-hero-tag" style={{ right: "0%", top: "54%" }}>
+              <strong>Thép 304</strong>
+              Hai lớp hút chân không
             </div>
-          )}
-
-          <div style={{ flex: "999 1 420px", minWidth: 0, padding: "clamp(12px,1.6vw,20px)", display: "flex" }}>
-            <div style={{ position: "relative", flex: 1, alignSelf: isDesktop ? "stretch" : "flex-start", opacity: fading ? 0 : 1, transition: "opacity 200ms cubic-bezier(.2,.7,.2,1)" }}>
-              {isDesktop ? (
-                // Desktop: ảnh cao bằng cột thông tin bên cạnh, không để khoảng trắng
-                <div style={{ position: "relative", height: "100%", minHeight: 420, borderRadius: 6, overflow: "hidden", background: "var(--surface-photo)" }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={photo(tea.ph)} alt={tea.name} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
-                </div>
-              ) : (
-                <ProductImage src={photo(tea.ph)} alt={tea.name} ratio={mobile ? "4 / 3" : "5 / 4"} radius="6px" />
-              )}
-              <span style={{ position: "absolute", left: 14, top: 14, padding: "6px 12px", borderRadius: 999, background: "rgba(252,248,241,.88)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", fontSize: 12, color: "var(--text-strong)", whiteSpace: "nowrap" }}>
-                {tea.origin}
-              </span>
-              <div style={{ position: "absolute", right: 14, bottom: 14, display: "flex", gap: 8 }}>
-                <IconButton icon="chevron-left" label="Trà trước" variant="surface" onClick={() => pick(idx - 1)} />
-                <IconButton icon="chevron-right" label="Trà tiếp theo" variant="surface" onClick={() => pick(idx + 1)} />
-              </div>
+            <div className="hd-hero-swatches" role="group" aria-label="Đổi màu bình">
+              {hero.colors.map((c) => (
+                <button key={c.id} type="button" aria-pressed={c.id === color.id} aria-label={c.name} title={c.name} style={{ background: c.hex }} onClick={() => setColorId(c.id)} />
+              ))}
+              <span aria-live="polite">{color.name}</span>
             </div>
           </div>
+        )}
+      </div>
+    </section>
+  );
+}
 
-          <div style={{ flex: "1 1 320px", minWidth: 0, padding: "clamp(20px,2.4vw,32px) clamp(20px,2.4vw,32px) clamp(20px,2.4vw,28px) clamp(20px,1vw,12px)", display: "flex", flexDirection: "column", gap: 14 }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <div style={{ fontSize: 11, letterSpacing: ".16em", textTransform: "uppercase", fontWeight: 500, color: "var(--accent)", fontVariantNumeric: "tabular-nums" }}>
-                {pad(idx + 1)} / {pad(TEAS.length)} · {tea.kind}
-              </div>
-              <h2
-                style={{
-                  margin: 0,
-                  fontSize: "clamp(26px, 2.6vw, 34px)",
-                  lineHeight: 1.16,
-                  fontWeight: 600,
-                  letterSpacing: "0.015em",
-                  fontFamily: "var(--font-display)",
-                  color: "var(--text-strong)",
-                }}
-              >
-                <Link href={`/san-pham/${tea.slug}`} className="lt-card-name" style={{ color: "inherit", textDecoration: "none" }}>{tea.name}</Link>
-              </h2>
-              <div style={{ fontSize: 15, color: "var(--tra-500)" }}>{tea.note}</div>
-              <Rating value={tea.rating} count={tea.reviews} />
-            </div>
-            <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: "var(--text-body)", textWrap: "pretty" }}>{tea.desc}</p>
-            {tea.fixed ? (
-              <div style={{ padding: "14px 16px", border: "1px solid var(--border-hairline)", borderRadius: 6, background: "var(--bg-page)", fontSize: 13, lineHeight: 1.55, color: "var(--text-body)" }}>
-                Bộ quà gói sẵn trong hộp sơn mài. Bạn ghi lời nhắn ở bước đặt hàng, Lam Trà sẽ viết tay vào thiệp.
-              </div>
-            ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                <OptionPicker label="Khối lượng" options={SIZE_OPTIONS} value={size} onChange={(v) => { setSize(v); setAdded(false); }} />
-                <OptionPicker label="Phân hạng" options={GRADE_OPTIONS} value={grade} onChange={(v) => { setGrade(v); setAdded(false); }} />
-              </div>
-            )}
-            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12, paddingTop: 16, borderTop: "1px solid var(--border-hairline)", marginTop: "auto" }}>
-              <Price value={price} compareAt={tea.compareAt && size === DEFAULT_SIZE && grade === DEFAULT_GRADE ? tea.compareAt : undefined} size="lg" />
-              <span style={{ fontSize: 13, color: "var(--text-muted)" }}>{variantLabel(tea, size, grade)}</span>
-            </div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-              <div style={{ flex: "1 1 150px", minWidth: 0 }}>
-                <Button variant="secondary" fullWidth iconLeft={added ? "check" : "shopping-bag"} onClick={addToCart}>
-                  {added ? "Đã thêm" : "Thêm vào giỏ"}
-                </Button>
-              </div>
-              <div style={{ flex: "1 1 150px", minWidth: 0 }}>
-                <Button fullWidth iconRight="arrow-right" onClick={buyNow}>
-                  Mua ngay
-                </Button>
-              </div>
-            </div>
-            <div style={{ fontSize: 12, color: "var(--text-muted)" }}>Thanh toán VietQR hoặc COD · Lam Trà xác nhận qua Zalo trong 30 phút</div>
+function Promises() {
+  const items = [
+    { icon: "truck", t: "Giao toàn quốc", d: `Miễn phí cho đơn từ ${formatVND(FREE_SHIP_MIN)}` },
+    { icon: "pencil", t: "In tên theo ý bạn", d: "Xem trước 3D, in UV bền màu" },
+    { icon: "rotate-ccw", t: "Đổi trả 7 ngày", d: "Lỗi hoặc giao sai, Hydron chịu phí" },
+    { icon: "shield-check", t: "Bảo hành 12 tháng", d: "Mất giữ nhiệt, đổi bình mới" },
+  ];
+  return (
+    <div className="lt-container" style={{ marginTop: "clamp(24px, 4vw, 48px)" }}>
+      <div className="hd-promises">
+        {items.map((i) => (
+          <div key={i.t} className="hd-promise">
+            <span className="hd-promise-icon"><Icon name={i.icon} size={22} /></span>
+            <span><strong>{i.t}</strong><span>{i.d}</span></span>
           </div>
-        </div>
-      </section>
+        ))}
+      </div>
     </div>
+  );
+}
+
+function Collection({ products }: { products: Product[] }) {
+  const [tab, setTab] = useState("binh");
+  const list = products.filter((p) => !tab || p.category === tab);
+  return (
+    <section className="hd-section" aria-labelledby="bo-suu-tap">
+      <div className="lt-container">
+        <div className="hd-section-head">
+          <div>
+            <h2 id="bo-suu-tap">Chọn bình theo nhịp ngày của bạn</h2>
+            <p>Nắp vặn quai xách cho dân văn phòng, nắp ống hút cho phòng gym, bình nhỏ cho bé đi học. Mẫu nào cũng in tên được.</p>
+          </div>
+          <div className="hd-tabs" role="group" aria-label="Lọc theo loại">
+            {[{ slug: "", name: "Tất cả" }, ...CATEGORIES].map((c) => (
+              <button key={c.slug} type="button" className="hd-tab" aria-pressed={tab === c.slug} onClick={() => setTab(c.slug)}>{c.name}</button>
+            ))}
+          </div>
+        </div>
+        <ProductGridList products={list.slice(0, 4)} four />
+        <div style={{ marginTop: 40, display: "flex", justifyContent: "center" }}>
+          <Link href={tab ? `/san-pham?danh-muc=${tab}` : "/san-pham"} className="hd-btn hd-btn-line">Xem tất cả {(CATEGORIES.find((c) => c.slug === tab)?.name ?? "sản phẩm").toLowerCase()}<Icon name="arrow-right" size={18} /></Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CustomBand({ models }: { models: number }) {
+  const samples = [
+    { hex: "#0688AE", text: "Minh 07", font: "round" as const, ink: "#FFFFFF", sticker: "set", size: "500" },
+    { hex: "#262B2E", text: "LINH", font: "block" as const, ink: "#C8A15A", sticker: undefined, size: "900" },
+    { hex: "#E6D8BF", text: "Bảo An", font: "script" as const, ink: "#0B2A36", sticker: "la", size: "700" },
+  ];
+  return (
+    <section className="hd-band hd-section" aria-labelledby="ba-buoc">
+      <div className="lt-container hd-band-grid">
+        <div>
+          <h2 id="ba-buoc" style={{ fontSize: "clamp(28px, 3.6vw, 46px)" }}>Ba bước để có bình mang tên bạn</h2>
+          <ol className="hd-steps">
+            <li><span><strong>Chọn mẫu, dung tích và màu</strong><span>{models} mẫu bình, 500 – 900ml, mỗi mẫu 3 – 5 màu sơn nhám.</span></span></li>
+            <li><span><strong>Gõ tên, số hoặc chọn sticker</strong><span>Xoay bình 3D để xem chữ nằm ở đâu, đổi kiểu chữ và màu mực tới khi ưng.</span></span></li>
+            <li><span><strong>Đặt hàng, Hydron in và gửi</strong><span>In UV trong {CUSTOM_LEAD_TIME}, nhắn Zalo ảnh bình thật trước khi giao.</span></span></li>
+          </ol>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 32 }}>
+            <Link href="/thiet-ke-3d" className="hd-btn hd-btn-cream"><Icon name="pencil" size={18} />Mở trình thiết kế 3D</Link>
+          </div>
+        </div>
+        <div className="hd-band-visual" aria-hidden>
+          {samples.map((s) => (
+            <figure key={s.text}>
+              <BottleRender shape="classic" hex={s.hex} size={s.size} custom={{ text: s.text, font: s.font, ink: s.ink, sticker: s.sticker }} label="" viewBox="110 40 180 430" />
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function SizeGuide() {
+  const sizes = ["500", "700", "900"];
+  const colors = ["#0688AE", "#5B6C55", "#262B2E"];
+  return (
+    <section className="hd-section" aria-labelledby="dung-tich">
+      <div className="lt-container">
+        <div className="hd-section-head">
+          <div>
+            <h2 id="dung-tich">500, 700 hay 900ml?</h2>
+            <p>Vẽ cùng tỉ lệ. Một người uống khoảng 2 lít nước mỗi ngày: bình 700ml rót đầy ba lần là đủ.</p>
+          </div>
+        </div>
+        <div className="hd-sizes">
+          {sizes.map((s, i) => (
+            <Link key={s} href={`/san-pham?dung-tich=${s}`} className="hd-size" style={{ textDecoration: "none", color: "inherit" }}>
+              <span className="hd-size-vis">
+                <BottleRender shape="classic" hex={colors[i]} size={s} label={`Bình ${s}ml`} viewBox="100 48 200 412" noShadow />
+              </span>
+              <h3>{s}ml</h3>
+              <dl>
+                <dd>Cao {SIZE_INFO[s].height} · Ø {SIZE_INFO[s].diameter}</dd>
+              </dl>
+              <p>{SIZE_INFO[s].fits}</p>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Bulk() {
+  const names = ["An", "Bình", "Châu", "Dũng", "Hà", "Khoa"];
+  return (
+    <section className="hd-section" style={{ background: "var(--cream-100)" }} aria-labelledby="so-luong-lon">
+      <div className="lt-container hd-split">
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(6, minmax(0, 1fr))", alignItems: "end", gap: 4, order: 2 }} aria-hidden>
+          {names.map((n) => (
+            <BottleRender key={n} shape="classic" hex="#1F3A5C" size="700" custom={{ text: n, font: "round", ink: "#FFFFFF", sticker: "nui" }} label="" viewBox="130 40 140 430" />
+          ))}
+        </div>
+        <div>
+          <h2 id="so-luong-lon" style={{ fontSize: "clamp(28px, 3.4vw, 42px)" }}>In logo công ty, tên từng thành viên</h2>
+          <p style={{ marginTop: 16, fontSize: 16.5, lineHeight: 1.7, color: "var(--text-body)", maxWidth: 520 }}>
+            Quà tặng nhân viên, đồng phục đội bóng, kỷ niệm lớp học: cùng một mẫu bình, mỗi chiếc một tên. Đơn từ 20 bình có giá riêng và bản in thử trước khi sản xuất.
+          </p>
+          <ul style={{ margin: "20px 0 0", padding: 0, listStyle: "none", display: "grid", gap: 10, fontSize: 15, color: "var(--text-body)" }}>
+            {["Gửi file logo, Hydron dàn trang miễn phí", "Báo giá trong một ngày làm việc", "Giao nhiều địa chỉ trong một đơn"].map((t) => (
+              <li key={t} style={{ display: "flex", gap: 10, alignItems: "center" }}><Icon name="check" size={18} color="var(--blue-600)" />{t}</li>
+            ))}
+          </ul>
+          <Link href="/lien-he#dat-so-luong" className="hd-btn hd-btn-primary" style={{ marginTop: 28 }}>Nhận báo giá in số lượng lớn</Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Journal({ posts }: { posts: Post[] }) {
+  if (!posts.length) return null;
+  return (
+    <section className="hd-section" aria-labelledby="cam-nang">
+      <div className="lt-container">
+        <div className="hd-section-head">
+          <h2 id="cam-nang">Cẩm nang dùng bình</h2>
+          <Link href="/cam-nang" className="hd-link">Tất cả bài viết <Icon name="arrow-right" size={16} /></Link>
+        </div>
+        <div className="hd-posts">
+          {posts.slice(0, 3).map((p) => (
+            <Link key={p.slug} href={`/cam-nang/${p.slug}`} className="hd-post">
+              <span className="hd-post-cover"><PostCover post={p} /></span>
+              <time dateTime={p.date}>{p.date.split("-").reverse().join("/")} · {p.minutes} phút đọc</time>
+              <h3>{p.title}</h3>
+              <p>{p.excerpt}</p>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default function Landing({ products: initial, posts }: { products: Product[]; posts: Post[] }) {
+  const { products: live } = useCart();
+  const products = (live.length ? live : initial).filter((p) => p.active !== false && !p.deleted);
+  return (
+    <>
+      <Hero products={products} />
+      <Promises />
+      <Collection products={products} />
+      <DuneSpotlight products={products} />
+      <CustomBand models={products.filter((p) => p.customizable).length} />
+      <MascotShowcase products={products} />
+      <SleeveShowcase products={products} />
+      <SizeGuide />
+      <Bulk />
+      <Journal posts={posts} />
+    </>
   );
 }

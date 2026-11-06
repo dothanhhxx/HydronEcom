@@ -49,7 +49,7 @@ export default function AdminLoginPage() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "radial-gradient(ellipse at top, #143527 0%, #081912 100%)",
+        background: "radial-gradient(ellipse at top, #0A4A5E 0%, #062F3C 100%)",
         padding: "20px",
         fontFamily: "var(--font-ui)",
       }}
@@ -62,18 +62,18 @@ export default function AdminLoginPage() {
           borderRadius: 14,
           padding: "36px 32px 32px",
           boxShadow: "0 20px 40px rgba(0,0,0,0.4)",
-          border: "1px solid rgba(188, 154, 108, 0.4)",
+          border: "1px solid rgba(6, 136, 174, 0.4)",
           textAlign: "center",
         }}
       >
         {/* Emblem & Brand Title */}
-        <div style={{ display: "inline-flex", padding: 12, borderRadius: 12, background: "#0D2219", border: "1px solid rgba(188, 154, 108, 0.5)", marginBottom: 16 }}>
+        <div style={{ display: "inline-flex", padding: 12, borderRadius: 12, background: "#062F3C", border: "1px solid rgba(6, 136, 174, 0.5)", marginBottom: 16 }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/assets/lam-tra-emblem.svg" alt="" style={{ height: 36 }} />
+          <img src="/assets/brand/hydron-logo-cream.png" alt="" style={{ height: 30 }} />
         </div>
 
-        <h1 style={{ margin: "0 0 6px", fontSize: 22, fontWeight: 700, color: "#0D2219", letterSpacing: "0.02em" }}>
-          Quản Trị Lam Trà
+        <h1 style={{ margin: "0 0 6px", fontSize: 22, fontWeight: 700, color: "#062F3C", letterSpacing: "0.02em" }}>
+          Quản trị Hydron
         </h1>
         <p style={{ margin: "0 0 24px", fontSize: 13.5, color: "#6B7280", lineHeight: 1.5 }}>
           Cổng duyệt đơn hàng và điều chỉnh giá trà độc lập cho chủ shop.
@@ -101,7 +101,7 @@ export default function AdminLoginPage() {
                   padding: "0 14px",
                   borderRadius: 8,
                   border: error ? "1.5px solid #EF4444" : "1.2px solid #D1D5DB",
-                  background: "#FAF8F5",
+                  background: "#FFFDF8",
                   fontSize: 15,
                   outline: "none",
                   boxSizing: "border-box",
@@ -122,13 +122,13 @@ export default function AdminLoginPage() {
               height: 46,
               borderRadius: 8,
               border: 0,
-              background: "linear-gradient(135deg, #DFBE89 0%, #BC9A6C 100%)",
-              color: "#0F261C",
+              background: "#05708F",
+              color: "#FFFFFF",
               fontSize: 15,
               fontWeight: 700,
               cursor: loading ? "default" : "pointer",
               opacity: loading ? 0.7 : 1,
-              boxShadow: "0 2px 8px rgba(188, 154, 108, 0.4)",
+              boxShadow: "0 2px 8px rgba(6, 136, 174, 0.4)",
               transition: "transform 150ms ease",
             }}
           >
@@ -138,8 +138,8 @@ export default function AdminLoginPage() {
 
         <div style={{ marginTop: 24, paddingTop: 18, borderTop: "1px solid #F3F4F6", fontSize: 12.5, color: "#9CA3AF" }}>
           <div>
-            <Link href="/" style={{ color: "#047857", textDecoration: "none", fontWeight: 500 }}>
-              ← Quay lại trang chủ Lam Trà
+            <Link href="/" style={{ color: "#05708F", textDecoration: "none", fontWeight: 500 }}>
+              ← Quay lại trang chủ Hydron
             </Link>
           </div>
         </div>

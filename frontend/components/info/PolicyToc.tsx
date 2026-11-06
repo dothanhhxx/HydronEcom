@@ -71,17 +71,17 @@ export function PolicyToc({ items }: { items: TocItem[] }) {
               gap: 10,
               padding: "10px 12px",
               borderRadius: 6,
-              color: isActive ? "var(--tra-900)" : "var(--text-body)",
-              background: isActive ? "rgba(188, 154, 108, 0.18)" : "transparent",
+              color: isActive ? "var(--blue-800)" : "var(--text-body)",
+              background: isActive ? "var(--blue-50)" : "transparent",
               fontWeight: isActive ? 700 : 500,
               textDecoration: "none",
               fontSize: 13.5,
               lineHeight: 1.4,
-              borderLeft: isActive ? "3px solid var(--tra-700)" : "3px solid transparent",
+              borderLeft: isActive ? "3px solid var(--blue-600)" : "3px solid transparent",
               transition: "all 0.15s ease",
             }}
           >
-            <Icon name={t.icon} size={16} color={isActive ? "var(--tra-800)" : "var(--tra-600)"} />
+            <Icon name={t.icon} size={16} color={isActive ? "var(--blue-700)" : "var(--blue-500)"} />
             <span>{t.label}</span>
           </a>
         );
@@ -102,7 +102,7 @@ export function PolicyToc({ items }: { items: TocItem[] }) {
             fontWeight: 700,
             textTransform: "uppercase",
             letterSpacing: ".12em",
-            color: "var(--tra-700)",
+            color: "var(--blue-600)",
             marginBottom: 12,
             paddingBottom: 8,
             borderBottom: "1px solid var(--border-hairline)",
@@ -128,14 +128,14 @@ export function PolicyToc({ items }: { items: TocItem[] }) {
           <a
             href={telLink()}
             style={{
-              color: "var(--tra-700)",
+              color: "var(--blue-600)",
               fontWeight: 600,
               textDecoration: "none",
               display: "inline-block",
               marginTop: 4,
             }}
           >
-            📞 Hotline: {SITE.phone}
+            Hotline: {SITE.phone}
           </a>
         </div>
       </aside>
@@ -178,9 +178,9 @@ export function PolicyToc({ items }: { items: TocItem[] }) {
             alignItems: "center",
             justifyContent: "space-between",
             padding: "16px 18px",
-            background: "#0D2219",
-            color: "#FAF8F5",
-            borderBottom: "1.5px solid rgba(188, 154, 108, 0.45)",
+            background: "#062F3C",
+            color: "#FDF2DF",
+            borderBottom: "1.5px solid rgba(6, 136, 174, 0.5)",
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
@@ -201,9 +201,9 @@ export function PolicyToc({ items }: { items: TocItem[] }) {
               alignItems: "center",
               justifyContent: "center",
               background: "rgba(255, 255, 255, 0.1)",
-              border: "1px solid rgba(188, 154, 108, 0.35)",
+              border: "1px solid rgba(253, 242, 223, 0.35)",
               borderRadius: 6,
-              color: "#FAF8F5",
+              color: "#FDF2DF",
               cursor: "pointer",
               fontSize: 16,
               lineHeight: 1,
@@ -224,9 +224,9 @@ export function PolicyToc({ items }: { items: TocItem[] }) {
             style={{
               marginTop: 24,
               padding: "14px",
-              background: "rgba(188, 154, 108, 0.08)",
+              background: "var(--blue-50)",
               borderRadius: 8,
-              border: "1px solid rgba(188, 154, 108, 0.2)",
+              border: "1px solid var(--blue-100)",
               fontSize: 12.5,
               lineHeight: 1.5,
               color: "var(--text-body)",
@@ -235,7 +235,7 @@ export function PolicyToc({ items }: { items: TocItem[] }) {
             <strong>Cần tư vấn trực tiếp?</strong>
             <br />
             Hotline / Zalo:{" "}
-            <a href={telLink()} style={{ color: "var(--tra-800)", fontWeight: 700, textDecoration: "none" }}>
+            <a href={telLink()} style={{ color: "var(--blue-700)", fontWeight: 700, textDecoration: "none" }}>
               {SITE.phone}
             </a>
           </div>

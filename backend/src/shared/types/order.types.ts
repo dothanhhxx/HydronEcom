@@ -1,10 +1,15 @@
 // Shared Order Types - Dùng chung cho cả Client Storefront, Admin và Server Services
+import type { Customization, Shape } from "./product.types.js";
 
 export type CartLine = {
   slug: string;
+  /** Dung tích "500" | "700" | "900", hoặc "-" với phụ kiện một cỡ */
   size: string;
-  grade: string;
+  /** id màu, hoặc "-" nếu sản phẩm không có màu */
+  color: string;
   qty: number;
+  /** Thiết kế riêng của khách (in tên/số, sticker) */
+  custom?: Customization;
 };
 
 export type CartItem = CartLine & {
@@ -12,6 +17,10 @@ export type CartItem = CartLine & {
   name: string;
   ph: string;
   variant: string;
+  /** Mã màu để dựng ảnh khi chưa có ảnh chụp */
+  hex: string;
+  shape: Shape;
+  customLabel?: string;
   unit: number;
   total: number;
   max: number;
@@ -71,7 +80,7 @@ export type Order = OrderInput & {
   totals: OrderTotals;
   /**
    * 0: Mới đặt (Chờ xác nhận)
-   * 1: Đã xác nhận (Đã duyệt tiền VietQR / chốt đơn COD)
+   * 1: Đã xác nhận (Đã nhận tiền VietQR / chốt đơn COD) — với đơn in tên: bắt đầu in
    * 2: Đang giao hàng
    * 3: Hoàn thành (Đã nhận hàng)
    * -1: Đã hủy

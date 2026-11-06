@@ -5,3 +5,5 @@ export * from "./types/auth.types";
 export * from "./types/api.types";
 export * from "./types/contact.types";
 export * from "./constants/order-status";
+export * from "./catalog";
+export * from "./checkout";

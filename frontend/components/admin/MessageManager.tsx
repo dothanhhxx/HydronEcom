@@ -98,10 +98,10 @@ export function MessageManager() {
 
           <div className="lt-admin-metric-card">
             <div className="lt-metric-label" style={{ fontSize: 13, color: "#6B7280" }}>Yêu cầu báo giá quà</div>
-            <div className="lt-metric-value" style={{ fontSize: 22, fontWeight: 700, color: "#0D2219", marginTop: 4 }}>
+            <div className="lt-metric-value" style={{ fontSize: 22, fontWeight: 700, color: "#062F3C", marginTop: 4 }}>
               {metrics.quoteCount}
             </div>
-            <div className="lt-metric-sub" style={{ fontSize: 12, color: "#047857", marginTop: 4 }}>Quà doanh nghiệp & đoàn thể</div>
+            <div className="lt-metric-sub" style={{ fontSize: 12, color: "#05708F", marginTop: 4 }}>Quà doanh nghiệp & đoàn thể</div>
           </div>
 
           <div className="lt-admin-metric-card">
@@ -149,7 +149,7 @@ export function MessageManager() {
                   borderRadius: 6,
                   border: `1px solid ${active ? "var(--tra-500)" : "#E5E7EB"}`,
                   background: active ? "var(--tra-500)" : "#FFFFFF",
-                  color: active ? "#0D2219" : "#4B5563",
+                  color: active ? "#062F3C" : "#4B5563",
                   fontWeight: active ? 600 : 500,
                   fontSize: 13,
                   cursor: "pointer",
@@ -172,7 +172,7 @@ export function MessageManager() {
               padding: "0 10px",
               borderRadius: 6,
               border: "1px solid #D1D5DB",
-              background: "#FAF8F5",
+              background: "#FFFDF8",
               fontSize: 13,
               color: "#374151",
               flexShrink: 0,
@@ -194,7 +194,7 @@ export function MessageManager() {
                 padding: "0 12px",
                 borderRadius: 6,
                 border: "1px solid #D1D5DB",
-                background: "#FAF8F5",
+                background: "#FFFDF8",
                 fontSize: 13,
                 flex: 1,
                 minWidth: 0,
@@ -207,7 +207,7 @@ export function MessageManager() {
                 padding: "0 16px",
                 borderRadius: 6,
                 border: 0,
-                background: "#0D2219",
+                background: "#062F3C",
                 color: "#FFFFFF",
                 fontSize: 13,
                 fontWeight: 600,
@@ -303,7 +303,7 @@ export function MessageManager() {
                         fontSize: 11.5,
                         fontWeight: 600,
                         background: isContacted ? "#ECFDF5" : "#FFFBEB",
-                        color: isContacted ? "#047857" : "#B45309",
+                        color: isContacted ? "#05708F" : "#B45309",
                         border: `1px solid ${isContacted ? "#A7F3D0" : "#FDE68A"}`,
                       }}
                     >
@@ -326,7 +326,7 @@ export function MessageManager() {
                         fontSize: 12.5,
                         fontWeight: 600,
                         cursor: "pointer",
-                        color: isContacted ? "#4B5563" : "#047857",
+                        color: isContacted ? "#4B5563" : "#05708F",
                       }}
                     >
                       {isContacted ? "Đánh dấu chưa xử lý" : "✓ Đánh dấu đã liên hệ"}
@@ -345,7 +345,7 @@ export function MessageManager() {
                           borderRadius: 6,
                           border: "1px solid #D1D5DB",
                           background: "#FFFFFF",
-                          color: "#0D2219",
+                          color: "#062F3C",
                           fontSize: 12.5,
                           fontWeight: 600,
                           textDecoration: "none",
@@ -385,29 +385,29 @@ export function MessageManager() {
 
                   {/* Quote Metadata Bar if exists */}
                   {(m.quantity || m.budget || m.date || m.product || m.stars) && (
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 10, padding: "8px 12px", borderRadius: 6, background: "#FAF8F5", border: "1px solid #EFE8DC", fontSize: 12.5 }}>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 10, padding: "8px 12px", borderRadius: 6, background: "#FFFDF8", border: "1px solid #EFE8DC", fontSize: 12.5 }}>
                       {m.quantity && (
                         <div>
                           <span style={{ color: "#6B7280" }}>Số lượng: </span>
-                          <strong style={{ color: "#0D2219" }}>{m.quantity} suất/hộp</strong>
+                          <strong style={{ color: "#062F3C" }}>{m.quantity} suất/hộp</strong>
                         </div>
                       )}
                       {m.budget && (
                         <div>
                           <span style={{ color: "#6B7280" }}>Ngân sách: </span>
-                          <strong style={{ color: "#0D2219" }}>{m.budget}</strong>
+                          <strong style={{ color: "#062F3C" }}>{m.budget}</strong>
                         </div>
                       )}
                       {m.date && (
                         <div>
                           <span style={{ color: "#6B7280" }}>Cần hàng: </span>
-                          <strong style={{ color: "#0D2219" }}>{m.date}</strong>
+                          <strong style={{ color: "#062F3C" }}>{m.date}</strong>
                         </div>
                       )}
                       {m.product && (
                         <div>
                           <span style={{ color: "#6B7280" }}>Sản phẩm: </span>
-                          <strong style={{ color: "#0D2219" }}>{m.product}</strong>
+                          <strong style={{ color: "#062F3C" }}>{m.product}</strong>
                         </div>
                       )}
                       {m.stars && (
@@ -445,7 +445,7 @@ export function MessageManager() {
                           <button
                             type="button"
                             onClick={() => handleSaveNote(m.id || "")}
-                            style={{ height: 34, padding: "0 12px", borderRadius: 6, border: 0, background: "#0D2219", color: "#FFF", fontSize: 12, fontWeight: 600, cursor: "pointer", flexShrink: 0 }}
+                            style={{ height: 34, padding: "0 12px", borderRadius: 6, border: 0, background: "#062F3C", color: "#FFF", fontSize: 12, fontWeight: 600, cursor: "pointer", flexShrink: 0 }}
                           >
                             Lưu
                           </button>
@@ -474,7 +474,7 @@ export function MessageManager() {
                               padding: "4px 8px",
                               borderRadius: 4,
                               border: "1px dashed #D1D5DB",
-                              background: "#FAF8F5",
+                              background: "#FFFDF8",
                               color: "#6B7280",
                               fontSize: 11.5,
                               cursor: "pointer",
