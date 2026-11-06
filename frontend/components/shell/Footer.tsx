@@ -94,6 +94,7 @@ export default function Footer() {
             <Link href="/gioi-thieu">Về Hydron</Link>
           </span>
         </div>
+        <p className="hd-footer-credit">Student project – E-Business, Hanoi University.</p>
       </div>
     </footer>
   );

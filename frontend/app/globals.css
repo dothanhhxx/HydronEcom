@@ -229,6 +229,7 @@ button.hd-swatch-dot { padding: 0; cursor: pointer; }
 .hd-footer-social a { width: 40px; height: 40px; border-radius: 999px; border: 1px solid rgba(253, 242, 223, .28); display: flex; align-items: center; justify-content: center; }
 .hd-footer-social a:hover { background: rgba(253, 242, 223, .12); text-decoration: none; }
 .hd-footer-bottom { margin-top: 48px; padding-top: 22px; border-top: 1px solid rgba(253, 242, 223, .16); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; font-size: 13px; }
+.hd-footer-credit { margin: 14px 0 0; font-size: 12px; text-align: center; color: var(--text-on-inverse-muted); }
 .hd-news { display: flex; gap: 8px; margin-top: 14px; max-width: 360px; }
 .hd-news input { flex: 1; min-width: 0; height: 44px; padding: 0 14px; border-radius: var(--radius-input); border: 1px solid rgba(253, 242, 223, .3); background: rgba(255, 255, 255, .06); color: #fff; font: 400 14px var(--font-ui); }
 .hd-news input::placeholder { color: var(--text-on-inverse-muted); }
