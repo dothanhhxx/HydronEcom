@@ -27,6 +27,34 @@ export type OrderMetrics = {
   cancelledCount: number;
 };
 
+/** Bỏ dữ liệu chỉ dành cho admin trước khi trả cho khách. */
+export function toPublicOrder(order: Order): Order {
+  const { internalNote: _internal, ...rest } = order;
+  return rest;
+}
+
+const maskCode = (code: string) => code.slice(0, 2) + "••••" + code.slice(-2);
+const maskPhone = (p: string) => (p.length > 6 ? p.slice(0, 4) + "•••" + p.slice(-3) : "•••");
+/** "Nguyễn Văn An" → "••• An": đủ để khách nhận ra đơn của mình. */
+const maskName = (name: string) => {
+  const parts = name.trim().split(/\s+/);
+  return parts.length > 1 ? "••• " + parts[parts.length - 1] : (parts[0]?.[0] ?? "") + "•••";
+};
+
+function maskOrder(order: Order): Order {
+  const o = toPublicOrder(order);
+  return {
+    ...o,
+    code: maskCode(o.code),
+    buyer: { name: maskName(o.buyer.name), phone: maskPhone(o.buyer.phone) },
+    recipient: o.recipient ? { name: maskName(o.recipient.name), phone: maskPhone(o.recipient.phone) } : undefined,
+    address: "",
+    note: undefined,
+    gift: o.gift ? { wrap: o.gift.wrap, hidePrice: o.gift.hidePrice } : undefined,
+    masked: true,
+  };
+}
+
 export class OrderService {
   /** Tạo đơn hàng mới từ Storefront */
   static async createOrder(
@@ -87,6 +115,24 @@ export class OrderService {
             (o.recipient && normalizePhone(o.recipient.phone) === cleanPhone))
       ) || null
     );
+  }
+
+  /**
+   * Khách tra cứu bằng riêng số điện thoại. Ai biết SĐT cũng gọi được, nên chỉ trả
+   * những gì cần để theo dõi trạng thái: mã đơn bị che một phần (mã đầy đủ + SĐT mới
+   * mở được địa chỉ và thông tin chuyển khoản), tên rút gọn, không địa chỉ, email, ghi chú.
+   */
+  static async lookupByPhone(phone: string, limit = 20): Promise<Order[]> {
+    const cleanPhone = normalizePhone(phone.trim());
+    const all = await OrderRepository.findAll();
+    return all
+      .filter(
+        (o) =>
+          normalizePhone(o.buyer.phone) === cleanPhone ||
+          (o.recipient && normalizePhone(o.recipient.phone) === cleanPhone)
+      )
+      .slice(0, limit)
+      .map(maskOrder);
   }
 
   /** Khách báo đã chuyển khoản VietQR */

@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Button, Icon, Input, Panel, Skeleton, formatVND } from "@/components/ds";
+import { useEffect, useRef, useState } from "react";
+import { Badge, Button, Icon, Input, Panel, Skeleton, formatVND } from "@/components/ds";
 import { ProductGridList } from "@/components/catalog/ProductCard";
 import { useCart } from "@/lib/cart";
 import { ORDER_STEPS, formatDateTime, isPhone, normalizePhone, type Order } from "@/lib/checkout";
@@ -40,29 +40,109 @@ export function OrderSuccess() {
   );
 }
 
-/** /tra-cuu-don: không cần đăng nhập, chỉ cần mã đơn + SĐT. */
+/** Trạng thái theo cách khách hiểu: đơn đang ở đâu, không phải mã nội bộ. */
+const STATUS_TEXT: Record<number, { label: string; tone: "neutral" | "new" | "accent" | "success" | "sale" }> = {
+  0: { label: "Chờ xác nhận", tone: "neutral" },
+  1: { label: "Đang chuẩn bị hàng", tone: "new" },
+  2: { label: "Đang trên đường giao", tone: "accent" },
+  3: { label: "Đã giao", tone: "success" },
+  [-1]: { label: "Đã hủy", tone: "sale" },
+};
+
+/** Thanh 4 nấc gọn cho từng dòng đơn; chữ trạng thái nằm ở Badge, thanh này chỉ minh họa. */
+function MiniTrack({ status }: { status: number }) {
+  return (
+    <span aria-hidden style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 4, width: "100%", maxWidth: 240 }}>
+      {ORDER_STEPS.map((s, i) => (
+        <span key={s} style={{ height: 4, borderRadius: 2, background: status >= i ? "var(--primary)" : "var(--border-strong)" }} />
+      ))}
+    </span>
+  );
+}
+
+function OrderRow({ order, onOpen, rowRef }: { order: Order; onOpen: () => void; rowRef: (el: HTMLButtonElement | null) => void }) {
+  const st = STATUS_TEXT[order.status] ?? STATUS_TEXT[0];
+  const qty = order.items.reduce((n, i) => n + i.qty, 0);
+  return (
+    <li style={{ borderBottom: "1px solid var(--border-hairline)" }}>
+      <button ref={rowRef} type="button" onClick={onOpen} className="hd-order-row" aria-label={`Xem đơn ${order.code}, ${st.label}`}>
+        <span style={{ display: "flex", flexDirection: "column", gap: 8, minWidth: 0, flex: "1 1 auto" }}>
+          <span style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 10 }}>
+            <strong style={{ fontSize: 16, fontWeight: 700, letterSpacing: ".04em", color: "var(--text-strong)" }}>{order.code}</strong>
+            <Badge tone={st.tone}>{st.label}</Badge>
+          </span>
+          <span style={{ fontSize: 14, lineHeight: 1.5, color: "var(--text-body)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {qty} sản phẩm: {order.items.map((i) => i.name).join(", ")}
+          </span>
+          <span style={{ fontSize: 13, color: "var(--text-muted)" }}>Đặt lúc {formatDateTime(order.createdAt)}</span>
+          {order.status >= 0 && <MiniTrack status={order.status} />}
+        </span>
+        <span style={{ display: "flex", alignItems: "center", gap: 6, flex: "none", fontSize: 15, fontWeight: 500, color: "var(--text-strong)" }}>
+          {formatVND(order.totals.total)}
+          <Icon name="chevron-right" size={18} color="var(--text-muted)" />
+        </span>
+      </button>
+    </li>
+  );
+}
+
+const fetchJSON = async <T,>(url: string): Promise<T | undefined> => {
+  try {
+    const r = await fetch(url);
+    return r.ok ? ((await r.json()) as T) : undefined;
+  } catch {
+    return undefined; // mất mạng: nơi gọi tự thử dữ liệu trên máy
+  }
+};
+
+/** /tra-cuu-don: không cần đăng nhập. Tra bằng SĐT (xem danh sách đơn) hoặc mã đơn + SĐT (xem đủ chi tiết). */
 export function OrderLookup() {
   const params = useSearchParams();
+  const [mode, setMode] = useState<"phone" | "code">(params.get("ma") ? "code" : "phone");
   const [code, setCode] = useState(params.get("ma") ?? "");
   const [phone, setPhone] = useState("");
   const [order, setOrder] = useState<Order>();
+  const [list, setList] = useState<{ phone: string; orders: Order[] }>();
+  const [openIdx, setOpenIdx] = useState<number>();
   const [error, setError] = useState<string>();
   const [busy, setBusy] = useState(false);
+  const rows = useRef<(HTMLButtonElement | null)[]>([]);
+  const backRef = useRef<HTMLDivElement>(null);
+  const lastOpened = useRef<number | undefined>(undefined);
 
-  const find = async () => {
-    const c = code.trim().toUpperCase();
-    if (!c) return setError("Bạn nhập mã đơn, ví dụ HDAB12CD.");
-    if (!isPhone(phone)) return setError("Số điện thoại chưa đúng.");
+  // Mở đơn: đưa focus tới nút quay lại; quay lại: trả focus về đúng dòng vừa mở.
+  useEffect(() => {
+    if (openIdx !== undefined) backRef.current?.querySelector("button")?.focus();
+    else if (lastOpened.current !== undefined) rows.current[lastOpened.current]?.focus();
+  }, [openIdx]);
+
+  const switchMode = (m: "phone" | "code") => {
+    setMode(m);
+    setError(undefined);
+  };
+
+  const findByPhone = async () => {
+    if (!isPhone(phone)) return setError("Số điện thoại chưa đúng, ví dụ 0912 345 678.");
     setError(undefined);
     setBusy(true);
     const p = normalizePhone(phone);
-    let found: Order | undefined;
-    try {
-      const r = await fetch(`/api/orders?ma=${encodeURIComponent(c)}&sdt=${encodeURIComponent(p)}`);
-      if (r.ok) found = (await r.json()).order;
-    } catch {
-      /* mất mạng: thử dữ liệu trên máy */
-    }
+    const data = await fetchJSON<{ orders: Order[] }>(`/api/orders/by-phone?sdt=${encodeURIComponent(p)}`);
+    const orders = data?.orders ?? localOrders(p);
+    setBusy(false);
+    setOpenIdx(undefined);
+    lastOpened.current = undefined;
+    setList({ phone: p, orders });
+    if (!data && orders.length === 0) setError("Chưa tải được danh sách đơn. Bạn kiểm tra kết nối rồi thử lại, hoặc nhắn Zalo để Hydron tra giúp.");
+  };
+
+  const findByCode = async () => {
+    const c = code.trim().toUpperCase();
+    if (!c) return setError("Bạn nhập mã đơn, ví dụ HDAB12CD.");
+    if (!isPhone(phone)) return setError("Số điện thoại chưa đúng, ví dụ 0912 345 678.");
+    setError(undefined);
+    setBusy(true);
+    const p = normalizePhone(phone);
+    let found = (await fetchJSON<{ order: Order }>(`/api/orders?ma=${encodeURIComponent(c)}&sdt=${encodeURIComponent(p)}`))?.order;
     if (!found) {
       const local = localOrder(c);
       if (local && (local.buyer.phone === p || local.recipient?.phone === p)) found = local;
@@ -72,24 +152,87 @@ export function OrderLookup() {
     if (!found) setError("Không tìm thấy đơn với mã và số điện thoại này. Bạn kiểm tra lại, hoặc nhắn Zalo để Hydron tra giúp.");
   };
 
+  const phoneInput = (
+    <Input label="Số điện thoại đặt hàng" type="tel" inputMode="tel" autoComplete="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="0912 345 678" />
+  );
+  const opened = list && openIdx !== undefined ? list.orders[openIdx] : undefined;
+  const active = list?.orders.filter((o) => o.status === 1 || o.status === 2).length ?? 0;
+
   return (
-    <div className="lt-container" style={{ paddingTop: "8px", paddingBottom: "80px", maxWidth: 900, display: "flex", flexDirection: "column", gap: 32 }}>
-      <form onSubmit={(e) => { e.preventDefault(); find(); }} style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "flex-start" }}>
-        <div style={{ flex: "1 1 200px" }}>
-          <Input label="Mã đơn" value={code} onChange={(e) => setCode(e.target.value)} placeholder="HDAB12CD" style={{ textTransform: "uppercase" }} />
-        </div>
-        <div style={{ flex: "1 1 200px" }}>
-          <Input label="Số điện thoại đặt hàng" type="tel" inputMode="tel" value={phone} onChange={(e) => setPhone(e.target.value)} />
-        </div>
-        <Button type="submit" disabled={busy} iconLeft="search" style={{ marginTop: 25, height: 48 }}>{busy ? "Đang tìm…" : "Tra cứu"}</Button>
+    <div className="lt-container" style={{ paddingTop: "8px", paddingBottom: "80px", maxWidth: 900, display: "flex", flexDirection: "column", gap: 28 }}>
+      <div role="group" aria-label="Cách tra cứu" className="hd-seg">
+        <button type="button" aria-pressed={mode === "phone"} onClick={() => switchMode("phone")}>
+          <Icon name="phone" size={16} /> Bằng số điện thoại
+        </button>
+        <button type="button" aria-pressed={mode === "code"} onClick={() => switchMode("code")}>
+          <Icon name="receipt" size={16} /> Bằng mã đơn
+        </button>
+      </div>
+
+      <form
+        onSubmit={(e) => { e.preventDefault(); if (mode === "phone") findByPhone(); else findByCode(); }}
+        style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "flex-start" }}
+      >
+        {mode === "code" && (
+          <div style={{ flex: "1 1 200px" }}>
+            <Input label="Mã đơn" value={code} onChange={(e) => setCode(e.target.value)} placeholder="HDAB12CD" style={{ textTransform: "uppercase" }} />
+          </div>
+        )}
+        <div style={{ flex: "1 1 220px" }}>{phoneInput}</div>
+        <Button type="submit" disabled={busy} iconLeft="search" style={{ marginTop: 25, height: 48 }}>
+          {busy ? "Đang tìm…" : mode === "phone" ? "Xem đơn của số này" : "Tra cứu"}
+        </Button>
       </form>
+
       {error && (
         <div role="alert" style={{ display: "flex", gap: 8, fontSize: 14, color: "var(--danger)" }}>
           <Icon name="info" size={18} />
           <span>{error} <a href={zaloLink()}>Nhắn Zalo</a></span>
         </div>
       )}
-      {order && <OrderView key={order.code} order={order} />}
+
+      {mode === "code" && order && <OrderView key={order.code} order={order} />}
+
+      {mode === "phone" && list && (
+        opened ? (
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div ref={backRef} style={{ alignSelf: "flex-start" }}>
+              <Button variant="ghost" size="sm" iconLeft="arrow-left" onClick={() => setOpenIdx(undefined)}>
+                Tất cả đơn của số {list.phone}
+              </Button>
+            </div>
+            <OrderView key={`${openIdx}-${opened.code}`} order={opened} />
+          </div>
+        ) : list.orders.length === 0 ? (
+          !error && (
+            <Panel style={{ padding: 24, display: "flex", flexDirection: "column", gap: 14, alignItems: "flex-start" }}>
+              <p role="status" style={{ margin: 0, fontSize: 15, lineHeight: 1.6 }}>
+                Chưa có đơn nào đặt bằng số {list.phone}. Nếu bạn đặt bằng số khác hoặc nhờ người khác đặt giúp, thử lại với số đó.
+              </p>
+              <Button variant="secondary" href={zaloLink()} iconLeft="message-circle">Nhắn Zalo để Hydron tra giúp</Button>
+            </Panel>
+          )
+        ) : (
+          <section aria-labelledby="order-list-title" style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <h2 id="order-list-title" style={{ margin: 0, fontSize: 18, fontWeight: 500, color: "var(--text-strong)" }}>
+              {list.orders.length} đơn đặt bằng số {list.phone}
+            </h2>
+            <p role="status" style={{ margin: 0, fontSize: 14, color: "var(--text-muted)" }}>
+              {active > 0 ? `${active} đơn đang được xử lý hoặc giao. ` : ""}Chọn một đơn để xem đang ở bước nào.
+            </p>
+            <ul style={{ listStyle: "none", margin: "8px 0 0", padding: 0, borderTop: "1px solid var(--border-hairline)" }}>
+              {list.orders.map((o, i) => (
+                <OrderRow
+                  key={`${i}-${o.code}`}
+                  order={o}
+                  rowRef={(el) => { rows.current[i] = el; }}
+                  onOpen={() => { lastOpened.current = i; setOpenIdx(i); }}
+                />
+              ))}
+            </ul>
+          </section>
+        )
+      )}
     </div>
   );
 }

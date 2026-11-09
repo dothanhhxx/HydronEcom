@@ -1,8 +1,8 @@
 import type { FastifyPluginAsync } from "fastify";
 import { adminAuthGuard } from "../../middleware/auth-guard.js";
-import { OrderService } from "./order.service.js";
+import { OrderService, toPublicOrder } from "./order.service.js";
 import type { OrderInput, OrderStatus } from "../../shared/types/order.types.js";
-import { normalizePhone } from "../../shared/checkout.js";
+import { isPhone, normalizePhone } from "../../shared/checkout.js";
 import { normalizeCustom } from "../../shared/catalog.js";
 
 const str = (v: unknown, max = 200) => (typeof v === "string" ? v.trim().slice(0, max) : "");
@@ -74,11 +74,21 @@ export const ordersRoutes: FastifyPluginAsync = async (fastify) => {
       return reply.status(404).send({ error: "Không tìm thấy đơn hàng." });
     }
 
-    return { order };
+    return { order: toPublicOrder(order) };
   };
 
   fastify.get("/api/orders", lookupHandler);
   fastify.get("/api/orders/lookup", lookupHandler);
+
+  // Public: Liệt kê đơn theo số điện thoại (dữ liệu đã che, xem OrderService.lookupByPhone)
+  fastify.get("/api/orders/by-phone", async (request, reply) => {
+    const query = (request.query as Record<string, string>) || {};
+    const phone = normalizePhone(str(query.sdt || query.phone, 20));
+    if (!isPhone(phone)) {
+      return reply.status(400).send({ error: "Số điện thoại chưa đúng." });
+    }
+    return { orders: await OrderService.lookupByPhone(phone) };
+  });
 
   // Public: Khách xác nhận đã thanh toán VietQR
   fastify.patch("/api/orders", async (request, reply) => {

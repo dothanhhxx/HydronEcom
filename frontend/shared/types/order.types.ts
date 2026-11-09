@@ -88,6 +88,8 @@ export type Order = OrderInput & {
   status: OrderStatus;
   paidClaimedAt?: string;
   internalNote?: string;
+  /** Bản rút gọn khi tra cứu chỉ bằng SĐT: đã che mã đơn, tên, địa chỉ, ghi chú. */
+  masked?: boolean;
 };
 
 export type OrderMetrics = {

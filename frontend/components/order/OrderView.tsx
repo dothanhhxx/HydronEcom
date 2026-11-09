@@ -40,8 +40,12 @@ export default function OrderView({ order: initial, fresh }: { order: Order; fre
   const [order, setOrder] = useState(initial);
   const { addMany } = useCart();
   const cancelled = order.status < 0;
-  const showQr = order.payment === "vietqr" && order.status === 0;
+  const masked = !!order.masked;
+  const showQr = !masked && order.payment === "vietqr" && order.status === 0;
   const to = order.recipient ?? order.buyer;
+  const day = (iso?: string) => (iso ? formatDateTime(iso).split(" · ")[1] : undefined);
+  const times: (string | undefined)[] = [day(order.createdAt)];
+  if (order.status > 0) times[order.status] = day(order.updatedAt);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
@@ -63,12 +67,19 @@ export default function OrderView({ order: initial, fresh }: { order: Order; fre
           <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
             <span style={{ fontSize: 13, color: "var(--text-muted)" }}>Mã đơn</span>
             <strong style={{ fontSize: 18, fontWeight: 700, letterSpacing: ".04em", color: "var(--text-strong)" }}>{order.code}</strong>
-            <CopyButton text={order.code} />
+            {!masked && <CopyButton text={order.code} />}
           </div>
           <span style={{ fontSize: 13, color: "var(--text-muted)" }}>Đặt lúc {formatDateTime(order.createdAt)}</span>
         </div>
-        {cancelled ? <Badge tone="sale">Đơn đã hủy</Badge> : <OrderTracker current={order.status} times={[formatDateTime(order.createdAt).split(" · ")[0]]} />}
+        {cancelled ? <Badge tone="sale">Đơn đã hủy</Badge> : <OrderTracker current={order.status} times={times} />}
       </Panel>
+
+      {masked && (
+        <Panel tone="info" style={{ padding: "14px 18px", display: "flex", gap: 10, fontSize: 14, lineHeight: 1.6 }}>
+          <Icon name="info" size={18} color="var(--primary)" />
+          <span>Để bảo vệ thông tin của bạn, địa chỉ và mã đơn đầy đủ được ẩn khi tra bằng số điện thoại. Mã đơn đầy đủ có trong tin nhắn Zalo hoặc email xác nhận.</span>
+        </Panel>
+      )}
 
       {showQr && (
         <PayBlock
@@ -95,13 +106,12 @@ export default function OrderView({ order: initial, fresh }: { order: Order; fre
           <div>
             <strong style={{ fontWeight: 500 }}>{to.name}</strong> · {to.phone}
             <br />
-            {order.address}, {order.province}
+            {masked ? order.province : `${order.address}, ${order.province}`}
             {order.recipient && <span style={{ display: "block", fontSize: 13, color: "var(--text-muted)" }}>Người đặt: {order.buyer.name} · {order.buyer.phone}</span>}
           </div>
           <div>
             {order.express ? "Giao nhanh" : "Giao tiêu chuẩn"} · {order.payment === "vietqr" ? "Chuyển khoản ngân hàng" : "Thanh toán khi nhận hàng"}
           </div>
-          {order.items.some((i) => i.custom) && <div>Bình in riêng: Hydron gửi ảnh bản in qua Zalo trước khi giao.</div>}
           {order.items.some((i) => i.custom) && <div>Bình in riêng: Hydron gửi ảnh bản in qua Zalo trước khi giao.</div>}
           {order.gift?.wrap && (
             <div style={{ display: "flex", gap: 8 }}>
