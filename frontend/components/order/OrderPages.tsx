@@ -7,7 +7,7 @@ import { Button, Icon, Input, Panel, Skeleton, formatVND } from "@/components/ds
 import { ProductGridList } from "@/components/catalog/ProductCard";
 import { useCart } from "@/lib/cart";
 import { ORDER_STEPS, formatDateTime, isPhone, normalizePhone, type Order } from "@/lib/checkout";
-import { localOrder, localOrders, removeAddress, savedAddresses, type SavedAddress } from "@/lib/orders-store";
+import { RESET_DAYS, clearCurrentUser, currentUser, historyResetAt, localOrder, localOrders, removeAddress, savedAddresses, setCurrentUser, sweepHistories, type SavedAddress } from "@/lib/orders-store";
 import { zaloLink } from "@/lib/site";
 import OrderView from "./OrderView";
 
@@ -99,10 +99,34 @@ export function AccountPage() {
   const { wishlist, addMany } = useCart();
   const [orders, setOrders] = useState<Order[]>();
   const [book, setBook] = useState<SavedAddress[]>([]);
+  const [user, setUser] = useState("");
+  const [resetAt, setResetAt] = useState<Date>();
+  const [phoneInput, setPhoneInput] = useState("");
+  const [phoneError, setPhoneError] = useState<string>();
+
+  const load = () => {
+    const u = currentUser();
+    setUser(u);
+    setOrders(localOrders(u));
+    setResetAt(historyResetAt(u));
+  };
   useEffect(() => {
-    setOrders(localOrders());
+    sweepHistories();
+    load();
     setBook(savedAddresses());
   }, []);
+
+  const switchUser = () => {
+    if (!isPhone(phoneInput)) return setPhoneError("Số điện thoại chưa đúng, ví dụ 0912 345 678.");
+    setPhoneError(undefined);
+    setCurrentUser(phoneInput);
+    setPhoneInput("");
+    load();
+  };
+  const signOut = () => {
+    clearCurrentUser();
+    load();
+  };
 
   const h2 = { margin: "0 0 16px", fontSize: 20, fontWeight: 500, color: "var(--text-strong)" } as const;
 
@@ -111,17 +135,33 @@ export function AccountPage() {
       <Panel tone="info" style={{ padding: "16px 20px", display: "flex", gap: 12, fontSize: 14, lineHeight: 1.6 }}>
         <Icon name="info" size={20} color="var(--primary)" />
         <span>
-          Bạn không cần tài khoản để mua hàng. Trang này lưu đơn hàng, địa chỉ và sản phẩm yêu thích ngay trên điện thoại hoặc máy tính bạn đang dùng.
+          Bạn không cần tài khoản để mua hàng. Trang này lưu đơn hàng (riêng theo từng số điện thoại, tự làm mới sau mỗi 3 ngày), địa chỉ và sản phẩm yêu thích ngay trên điện thoại hoặc máy tính bạn đang dùng.
           Để xem đơn đặt từ máy khác, bạn dùng <Link href="/tra-cuu-don">tra cứu đơn</Link>.
         </span>
       </Panel>
 
       <section>
-        <h2 style={h2}>Đơn hàng của bạn</h2>
+        <h2 style={h2}>Lịch sử mua hàng</h2>
+        {user ? (
+          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 16, fontSize: 14, color: "var(--text-body)" }}>
+            <span>
+              Số điện thoại: <strong style={{ fontWeight: 500, color: "var(--text-strong)" }}>{user}</strong>
+              {resetAt ? ` · Lịch sử tự làm mới lúc ${formatDateTime(resetAt.toISOString())}` : ` · Lịch sử tự làm mới sau mỗi ${RESET_DAYS} ngày`}
+            </span>
+            <Button variant="ghost" size="sm" onClick={signOut}>Không phải bạn?</Button>
+          </div>
+        ) : (
+          <form onSubmit={(e) => { e.preventDefault(); switchUser(); }} style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "flex-start", marginBottom: 16, maxWidth: 560 }}>
+            <div style={{ flex: "1 1 220px" }}>
+              <Input label="Số điện thoại đặt hàng" type="tel" inputMode="tel" value={phoneInput} onChange={(e) => setPhoneInput(e.target.value)} error={phoneError} hint={`Mỗi số điện thoại có lịch sử riêng, tự làm mới sau mỗi ${RESET_DAYS} ngày.`} />
+            </div>
+            <Button type="submit" style={{ marginTop: 25, height: 48 }}>Xem lịch sử</Button>
+          </form>
+        )}
         {orders === undefined ? (
           <Loading />
-        ) : orders.length === 0 ? (
-          <p style={{ margin: 0, fontSize: 15, color: "var(--text-body)" }}>Chưa có đơn nào trên thiết bị này. <Link href="/san-pham">Chọn bình</Link></p>
+        ) : !user ? null : orders.length === 0 ? (
+          <p style={{ margin: 0, fontSize: 15, color: "var(--text-body)" }}>Chưa có đơn nào trong {RESET_DAYS} ngày gần đây. <Link href="/san-pham">Chọn bình</Link></p>
         ) : (
           <div style={{ display: "flex", flexDirection: "column" }}>
             {orders.map((o) => (
