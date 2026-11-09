@@ -3,7 +3,7 @@ import { ADMIN_COOKIE_NAME } from "@/lib/auth";
 
 // Backend là nơi duy nhất giữ ADMIN_SECRET_KEY: middleware hỏi backend cookie có hợp lệ không,
 // thay vì tự kiểm bằng một bản sao khoá (hai bản lệch nhau sẽ đá người dùng về trang đăng nhập).
-const BACKEND_URL = process.env.BACKEND_URL || "http://127.0.0.1:4000";
+import { BACKEND_URL } from "@/lib/backend-url";
 
 async function isAdminSession(req: NextRequest): Promise<boolean> {
   const token = req.cookies.get(ADMIN_COOKIE_NAME)?.value;

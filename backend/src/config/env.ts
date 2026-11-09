@@ -24,9 +24,10 @@ export const ENV = {
   SUPABASE_BUCKET: process.env.SUPABASE_BUCKET || "products",
   // Appwrite Cloud: có PROJECT_ID + API_KEY thì dùng Appwrite (ưu tiên hơn Supabase).
   // Endpoint lấy ở Appwrite Console → Settings, vd. https://sgp.cloud.appwrite.io/v1 (bỏ "/" cuối).
-  APPWRITE_ENDPOINT: (process.env.APPWRITE_ENDPOINT || "https://cloud.appwrite.io/v1").trim().replace(/\/+$/, ""),
+  // Mặc định là Singapore vì project Hydron tạo ở vùng này; sai vùng sẽ báo "Project is not accessible in this region".
+  APPWRITE_ENDPOINT: (process.env.APPWRITE_ENDPOINT || "https://sgp.cloud.appwrite.io/v1").trim().replace(/\/+$/, ""),
   APPWRITE_PROJECT_ID: (process.env.APPWRITE_PROJECT_ID || "").trim(),
   APPWRITE_API_KEY: (process.env.APPWRITE_API_KEY || "").trim(),
-  APPWRITE_DATABASE_ID: process.env.APPWRITE_DATABASE_ID || "hydron",
+  APPWRITE_DATABASE_ID: (process.env.APPWRITE_DATABASE_ID || "Ecommerce").trim(),
   APPWRITE_BUCKET_ID: process.env.APPWRITE_BUCKET_ID || "products",
 };

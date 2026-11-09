@@ -1,7 +1,7 @@
 import { PRODUCTS } from "@/lib/products";
 import type { Product } from "@/shared";
 
-const BACKEND_URL = process.env.BACKEND_URL || "http://127.0.0.1:4000";
+import { BACKEND_URL } from "@/lib/backend-url";
 
 export class ProductApiService {
   /**
