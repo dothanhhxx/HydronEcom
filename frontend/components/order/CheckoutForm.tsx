@@ -101,7 +101,7 @@ export default function CheckoutForm() {
       return;
     }
     setBusy(true);
-    const r = await postJSON<{ order: Order }>("/api/orders", { ...data, website });
+    const r = await postJSON<{ order: Order }>("/api/orders", { ...data, hd_trap_k9: website });
     setBusy(false);
     if (!r.ok) {
       if (r.errors) setErrors(r.errors);
@@ -157,7 +157,8 @@ export default function CheckoutForm() {
           </div>
           <Input label="Email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} error={errors["buyer.email"]} hint="Không bắt buộc. Để nhận hóa đơn và cập nhật đơn." />
           {/* Bẫy bot: người thật không nhìn thấy ô này */}
-          <input tabIndex={-1} autoComplete="off" aria-hidden value={website} onChange={(e) => setWebsite(e.target.value)} name="website" style={{ position: "absolute", left: -9999, width: 1, height: 1, opacity: 0 }} />
+          {/* Tên ô cố ý vô nghĩa: tên như "website" bị trình duyệt/trình quản lý mật khẩu tự điền → chặn nhầm khách thật */}
+          <input type="text" tabIndex={-1} autoComplete="off" aria-hidden value={website} onChange={(e) => setWebsite(e.target.value)} name="hd_trap_k9" id="hd_trap_k9" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" data-form-type="other" style={{ position: "absolute", left: -9999, width: 1, height: 1, opacity: 0 }} />
         </Step>
 
         <Step n={2} title="Giao tới">

@@ -45,8 +45,10 @@ export const ordersRoutes: FastifyPluginAsync = async (fastify) => {
   // Public: Đặt hàng mới
   fastify.post("/api/orders", async (request, reply) => {
     const body = (request.body as Record<string, any>) || {};
-    if (body.website) {
-      return reply.status(400).send({ error: "Bị chặn." });
+    // Bẫy bot. Không dùng tên "website": trình duyệt tự điền ô đó và chặn nhầm khách thật.
+    if (body.hd_trap_k9) {
+      request.log.warn({ ip: request.ip }, "honeypot triggered on /api/orders");
+      return reply.status(400).send({ error: "Không gửi được đơn. Bạn tải lại trang rồi thử lại, hoặc nhắn Zalo để đặt trực tiếp." });
     }
 
     const input = sanitizeOrderInput(body);

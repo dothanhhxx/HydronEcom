@@ -13,8 +13,10 @@ export const messagesRoutes: FastifyPluginAsync = async (fastify) => {
   // Public: Gửi liên hệ, yêu cầu báo giá hoặc đánh giá sản phẩm
   fastify.post("/api/contact", async (request, reply) => {
     const b = (request.body as Record<string, any>) || {};
-    if (b.website) {
-      return reply.status(400).send({ error: "Bị chặn." });
+    // Bẫy bot. Không dùng tên "website": trình duyệt tự điền ô đó và chặn nhầm khách thật.
+    if (b.hd_trap_k9) {
+      request.log.warn({ ip: request.ip }, "honeypot triggered on /api/contact");
+      return reply.status(400).send({ error: "Không gửi được. Bạn tải lại trang rồi thử lại, hoặc nhắn Zalo nhé." });
     }
 
     const type = (TYPES as readonly string[]).includes(b.type) ? (b.type as Kind) : "lien-he";
