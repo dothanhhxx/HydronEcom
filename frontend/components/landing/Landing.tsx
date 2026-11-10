@@ -11,6 +11,7 @@ import { CUSTOM_LEAD_TIME, FREE_SHIP_MIN } from "@/lib/checkout";
 import type { Post } from "@/lib/posts";
 import { CATEGORIES, CUSTOM_TEXT_FEE, SIZE_INFO, priceRange, type Product } from "@/lib/products";
 import PostCover from "./PostCover";
+import Process from "./Process";
 import { DuneSpotlight, MascotShowcase, SleeveShowcase } from "./Showcase";
 
 function Hero({ products }: { products: Product[] }) {
@@ -113,38 +114,6 @@ function Collection({ products }: { products: Product[] }) {
   );
 }
 
-function CustomBand({ models }: { models: number }) {
-  const samples = [
-    { hex: "#0688AE", text: "Minh 07", font: "round" as const, ink: "#FFFFFF", sticker: "set", size: "500" },
-    { hex: "#262B2E", text: "LINH", font: "block" as const, ink: "#C8A15A", sticker: undefined, size: "900" },
-    { hex: "#E6D8BF", text: "Bảo An", font: "script" as const, ink: "#0B2A36", sticker: "la", size: "700" },
-  ];
-  return (
-    <section className="hd-band hd-section" aria-labelledby="ba-buoc">
-      <div className="lt-container hd-band-grid">
-        <div>
-          <h2 id="ba-buoc" style={{ fontSize: "clamp(28px, 3.6vw, 46px)" }}>Ba bước để có bình mang tên bạn</h2>
-          <ol className="hd-steps">
-            <li><span><strong>Chọn mẫu, dung tích và màu</strong><span>{models} mẫu bình, 500 – 900ml, mỗi mẫu 3 – 5 màu sơn nhám.</span></span></li>
-            <li><span><strong>Gõ tên, số hoặc chọn sticker</strong><span>Xoay bình 3D để xem chữ nằm ở đâu, đổi kiểu chữ và màu mực tới khi ưng.</span></span></li>
-            <li><span><strong>Đặt hàng, Hydron in và gửi</strong><span>In UV trong {CUSTOM_LEAD_TIME}, nhắn Zalo ảnh bình thật trước khi giao.</span></span></li>
-          </ol>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 32 }}>
-            <Link href="/thiet-ke-3d" className="hd-btn hd-btn-cream"><Icon name="pencil" size={18} />Mở trình thiết kế 3D</Link>
-          </div>
-        </div>
-        <div className="hd-band-visual" aria-hidden>
-          {samples.map((s) => (
-            <figure key={s.text}>
-              <BottleRender shape="classic" hex={s.hex} size={s.size} custom={{ text: s.text, font: s.font, ink: s.ink, sticker: s.sticker }} label="" viewBox="110 40 180 430" />
-            </figure>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function SizeGuide() {
   const sizes = ["500", "700", "900"];
   const colors = ["#0688AE", "#5B6C55", "#262B2E"];
@@ -236,7 +205,7 @@ export default function Landing({ products: initial, posts }: { products: Produc
       <Promises />
       <Collection products={products} />
       <DuneSpotlight products={products} />
-      <CustomBand models={products.filter((p) => p.customizable).length} />
+      <Process models={products.filter((p) => p.customizable).length} />
       <MascotShowcase products={products} />
       <SleeveShowcase products={products} />
       <SizeGuide />

@@ -457,3 +457,28 @@ button.hd-swatch-dot { padding: 0; cursor: pointer; }
   .hd-seg button { flex: 1; justify-content: center; padding: 0 10px; }
   .hd-order-row { align-items: flex-start; }
 }
+
+/* ---------- Quy trình đặt bình (components/landing/Process.tsx) ---------- */
+.hd-process { background: var(--cream-50); background-image: url("/assets/pattern/waves-cream.svg"); background-repeat: no-repeat; background-position: bottom center; background-size: 100% auto; }
+.hd-process-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(32px, 5vw, 56px); align-items: center; }
+@media (min-width: 1040px) { .hd-process-grid { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); } }
+.hd-process-eyebrow { display: flex; align-items: center; gap: 12px; margin: 0 0 16px; font-size: 13px; font-weight: 500; color: var(--sand-500); }
+.hd-process-eyebrow::after { content: ""; width: 48px; height: 1px; background: var(--sand-400); }
+.hd-process-intro h2 { font-size: clamp(30px, 3.8vw, 48px); line-height: 1.12; color: var(--blue-900); }
+.hd-process-intro h2 span { display: block; color: var(--sand-500); }
+.hd-process-lead { margin: 20px 0 28px; max-width: 440px; font-size: 16px; line-height: 1.7; color: var(--text-body); }
+.hd-process-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 20px; }
+@media (min-width: 720px) { .hd-process-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px 28px; } }
+.hd-process-step { position: relative; display: flex; flex-direction: column; gap: 10px; }
+.hd-process-num { display: flex; align-items: baseline; gap: 8px; font: 600 15px var(--font-display); color: var(--blue-900); }
+.hd-process-num b { font: 600 13px var(--font-sans); color: var(--text-muted); }
+.hd-process-blob { display: flex; align-items: flex-end; justify-content: center; aspect-ratio: 4 / 3; overflow: hidden; padding-top: 10px; border-radius: 58% 42% 55% 45% / 52% 46% 54% 48%; box-shadow: inset 0 0 0 1px rgba(11, 42, 54, .06); }
+.hd-process-blob > svg, .hd-process-blob > img { height: 112%; width: auto; max-width: 70%; margin-bottom: -6%; }
+.hd-process-step:nth-child(2) .hd-process-blob { border-radius: 44% 56% 48% 52% / 56% 44% 56% 44%; }
+.hd-process-step:nth-child(3) .hd-process-blob { border-radius: 52% 48% 60% 40% / 46% 54% 46% 54%; }
+.hd-process-step:nth-child(4) .hd-process-blob { border-radius: 48% 52% 42% 58% / 54% 48% 52% 46%; }
+.hd-process-step:nth-child(5) .hd-process-blob { border-radius: 60% 40% 50% 50% / 44% 56% 44% 56%; }
+.hd-process-step:nth-child(6) .hd-process-blob { border-radius: 42% 58% 54% 46% / 50% 50% 50% 50%; }
+.hd-process-step p { margin: 0; font-size: 13.5px; line-height: 1.55; color: var(--text-muted); }
+.hd-process-arrow { display: none; position: absolute; top: 46%; right: -24px; color: var(--sand-500); }
+@media (min-width: 720px) { .hd-process-arrow { display: block; } }
