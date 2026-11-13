@@ -146,14 +146,17 @@ export default function BottleRender({ shape, hex, lid, size = "700", custom, la
 
   const mid = (sy + bottom) / 2 + 8;
   const text = custom?.text ?? "";
+  const num = custom?.number ?? "";
   const sticker = custom?.sticker ? STICKER_ART[custom.sticker] : undefined;
   const fontBase = 30 * (W / 108);
   const widthFactor = custom?.font === "script" ? 0.48 : custom?.font === "block" ? 0.72 : 0.62;
   const fs = text ? Math.min(fontBase, (W * 0.86) / (Math.max(text.length, 1) * widthFactor)) : 0;
-  const both = !!text && !!sticker;
+  const numFs = num ? Math.min(46 * (W / 108), W * 0.52) : 0;
+  const hasBoth = (!!text || !!num) && (!!sticker || !!custom?.uploadedImage);
   const stickerSize = W * 0.42;
-  const stickerY = both ? mid - stickerSize * 0.75 : mid - stickerSize / 2;
-  const textY = both ? mid + stickerSize * 0.55 : mid;
+  const stickerY = hasBoth ? mid - stickerSize * 0.75 : mid - stickerSize / 2;
+  const numY = text ? mid - 14 : mid;
+  const textY = num ? mid + numFs * 0.65 : hasBoth ? mid + stickerSize * 0.55 : mid;
 
   return (
     <svg className={className} viewBox={viewBox} preserveAspectRatio="xMidYMid meet" role="img" aria-label={aria}>
@@ -165,10 +168,25 @@ export default function BottleRender({ shape, hex, lid, size = "700", custom, la
       <path d={body} fill={`url(#${ids.vert})`} />
       <path d={body} fill={`url(#${ids.shade})`} />
       <path d={`M${cx - hw + 6},${bottom - 3} L${cx + hw - 6},${bottom - 3}`} stroke="#000" strokeOpacity=".18" strokeWidth="2" />
+      {custom?.uploadedImage && (
+        <image
+          href={custom.uploadedImage}
+          x={cx - stickerSize * 0.65}
+          y={stickerY}
+          width={stickerSize * 1.3}
+          height={stickerSize * 1.3}
+          preserveAspectRatio="xMidYMid meet"
+        />
+      )}
       {sticker && (
         <g transform={`translate(${cx - stickerSize / 2} ${stickerY}) scale(${stickerSize / 24})`}>
           <path d={sticker.d} fill={sticker.mode === "fill" ? custom?.ink : "none"} stroke={sticker.mode === "stroke" ? custom?.ink : "none"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fillRule="evenodd" />
         </g>
+      )}
+      {num && (
+        <text x={cx} y={numY} textAnchor="middle" dominantBaseline="central" fill={custom?.ink} style={{ fontFamily: "var(--font-display, sans-serif)", fontWeight: 900, fontSize: numFs, letterSpacing: "0.02em" }}>
+          {num}
+        </text>
       )}
       {text && (
         <text x={cx} y={textY} textAnchor="middle" dominantBaseline="central" fill={custom?.ink} style={{ fontFamily: FONT_FAMILY[custom?.font ?? "block"], fontWeight: custom?.font === "round" ? 800 : 700, fontSize: fs, letterSpacing: custom?.font === "block" ? "0.02em" : undefined }}>

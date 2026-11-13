@@ -4,7 +4,7 @@ import { DEFAULT_PRODUCTS } from "@/shared/default-products";
 import type { Category, Product } from "@/shared/types/product.types";
 
 export * from "@/shared/catalog";
-export type { Category, ColorOption, Customization, FontId, Product, Shape, Spec } from "@/shared/types/product.types";
+export type { Category, ColorOption, Customization, CustomLayer, LayerType, FontId, Product, Shape, Spec } from "@/shared/types/product.types";
 
 export const PRODUCTS: Product[] = DEFAULT_PRODUCTS;
 

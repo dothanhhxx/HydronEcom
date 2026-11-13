@@ -40,6 +40,7 @@ export const INKS: { id: string; label: string }[] = [
 
 /** id sticker hợp lệ (hình vẽ nằm ở frontend/components/bottle/stickers.ts). */
 export const STICKERS: { id: string; label: string }[] = [
+  // Cổ điển & Tối giản
   { id: "song", label: "Sóng" },
   { id: "la", label: "Lá" },
   { id: "nui", label: "Núi" },
@@ -48,12 +49,69 @@ export const STICKERS: { id: string; label: string }[] = [
   { id: "set", label: "Tia sét" },
   { id: "mat-troi", label: "Mặt trời" },
   { id: "giot", label: "Giọt nước" },
-  // Linh vật, cùng bộ móc khóa Hydron
+  { id: "hinh-hoc", label: "Vòm cong" },
+  // Linh vật & Thú cưng
+  { id: "cho", label: "Cún cưng" },
+  { id: "meo", label: "Mèo" },
   { id: "gau", label: "Gấu" },
   { id: "tho", label: "Thỏ" },
   { id: "capybara", label: "Capybara" },
-  { id: "meo", label: "Mèo" },
   { id: "gau-truc", label: "Gấu trúc" },
+  { id: "ho", label: "Hổ" },
+  { id: "chim-canh-cut", label: "Chim cánh cụt" },
+  { id: "khung-long", label: "Khủng long" },
+  // Thể thao & Bóng đá
+  { id: "bong-da", label: "Bóng đá" },
+  { id: "cup", label: "Cúp" },
+  { id: "ao-dau", label: "Áo đấu" },
+  { id: "giay-da-bong", label: "Giày đinh" },
+  { id: "khung-thanh", label: "Khung thành" },
+  { id: "bong-ro", label: "Bóng rổ" },
+  { id: "bong-chuyen", label: "Bóng chuyền" },
+  { id: "tennis", label: "Tennis" },
+  { id: "chay-bo", label: "Chạy bộ" },
+  { id: "dap-xe", label: "Đạp xe" },
+  { id: "gym", label: "Gym" },
+  // Gaming
+  { id: "tay-cam", label: "Tay cầm" },
+  { id: "ban-phim", label: "Bàn phím" },
+  { id: "chuot", label: "Chuột" },
+  { id: "pixel-heart", label: "Tim 8-bit" },
+  { id: "level-up", label: "Level Up" },
+  // Ẩm thực
+  { id: "ca-phe", label: "Cà phê" },
+  { id: "tra-sua", label: "Trà sữa" },
+  { id: "burger", label: "Burger" },
+  { id: "pizza", label: "Pizza" },
+  { id: "donut", label: "Donut" },
+  { id: "kem", label: "Kem" },
+  // Cute
+  { id: "hoa", label: "Hoa" },
+  { id: "may", label: "Mây" },
+  { id: "cau-vong", label: "Cầu vồng" },
+  { id: "mat-cuoi", label: "Mặt cười" },
+  { id: "lap-lanh", label: "Lấp lánh" },
+  // Cool
+  { id: "lua", label: "Ngọn lửa" },
+  { id: "dau-lau", label: "Đầu lâu" },
+  { id: "doi-canh", label: "Đôi cánh" },
+  { id: "vuong-mien", label: "Vương miện" },
+  // Âm nhạc
+  { id: "tai-nghe", label: "Tai nghe" },
+  { id: "micro", label: "Micro" },
+  { id: "guitar", label: "Guitar" },
+  { id: "not-nhac", label: "Nốt nhạc" },
+  { id: "loa", label: "Loa" },
+  // Du lịch
+  { id: "may-bay", label: "Máy bay" },
+  { id: "may-anh", label: "Máy ảnh" },
+  { id: "bai-bien", label: "Bãi biển" },
+  { id: "la-ban", label: "La bàn" },
+  // Vũ trụ
+  { id: "hanh-tinh", label: "Hành tinh" },
+  { id: "mat-trang", label: "Mặt trăng" },
+  { id: "ten-lua", label: "Tên lửa" },
+  { id: "phi-hanh-gia", label: "Phi hành gia" },
 ];
 
 /** Làm sạch phần thiết kế: cắt độ dài, chỉ nhận font/màu mực/sticker có trong danh sách. */
@@ -64,24 +122,52 @@ export function normalizeCustom(c: Partial<Customization> | undefined, p?: Pick<
     .replace(/\s+/g, " ")
     .trim()
     .slice(0, CUSTOM_TEXT_MAX);
-  const sticker = STICKERS.some((s) => s.id === c.sticker) ? c.sticker : undefined;
-  if (!text && !sticker) return undefined;
+  const number = String(c.number ?? "")
+    .replace(/[^0-9A-Za-z#]/g, "")
+    .trim()
+    .slice(0, 4);
+  const sticker = c.sticker && STICKERS.some((s) => s.id === c.sticker) ? c.sticker : undefined;
+  const uploadedImage = c.uploadedImage && typeof c.uploadedImage === "string" ? c.uploadedImage : undefined;
+  const layers = Array.isArray(c.layers) && c.layers.length > 0 ? c.layers : undefined;
+
+  if (!text && !number && !sticker && !uploadedImage && (!layers || layers.length === 0)) return undefined;
+
   const font = FONTS.some((f) => f.id === c.font) ? (c.font as FontId) : "block";
-  const ink = INKS.some((i) => i.id === c.ink) ? (c.ink as string) : INKS[0].id;
-  return { text, font, ink, ...(sticker ? { sticker } : {}) };
+  const numberFont = FONTS.some((f) => f.id === c.numberFont) ? (c.numberFont as FontId) : font;
+  const ink = INKS.some((i) => i.id === c.ink) ? (c.ink as string) : (c.ink || INKS[0].id);
+
+  return {
+    text,
+    font,
+    ink,
+    ...(number ? { number, numberFont } : {}),
+    ...(sticker ? { sticker } : {}),
+    ...(uploadedImage ? { uploadedImage, uploadedImageStyle: c.uploadedImageStyle } : {}),
+    ...(layers ? { layers } : {}),
+  };
 }
 
-export const customFee = (c?: Customization) => (!c ? 0 : (c.text ? CUSTOM_TEXT_FEE : 0) + (c.sticker ? CUSTOM_STICKER_FEE : 0));
+export const customFee = (c?: Customization) => {
+  if (!c) return 0;
+  let fee = 0;
+  if (c.text || c.number) fee += CUSTOM_TEXT_FEE;
+  if (c.sticker || c.uploadedImage || (c.layers && c.layers.length > 0)) fee += CUSTOM_STICKER_FEE;
+  return fee;
+};
 
 export function customLabel(c?: Customization) {
   if (!c) return undefined;
   const parts: string[] = [];
   if (c.text) parts.push(`In “${c.text}” (${FONTS.find((f) => f.id === c.font)?.label ?? "Khối"}, ${INKS.find((i) => i.id === c.ink)?.label ?? "Trắng"})`);
+  if (c.number) parts.push(`Số “${c.number}”`);
   if (c.sticker) parts.push(`Sticker ${STICKERS.find((s) => s.id === c.sticker)?.label ?? c.sticker}`);
+  if (c.uploadedImage) parts.push(`Ảnh riêng (${c.uploadedImageStyle ?? "AI Sticker"})`);
+  if (c.layers && c.layers.length > 0) parts.push(`${c.layers.length} chi tiết`);
   return parts.join(" · ");
 }
 
-const customKey = (c?: Customization) => (c ? [c.text, c.font, c.ink, c.sticker ?? ""].join("~") : "");
+const customKey = (c?: Customization) =>
+  c ? [c.text, c.font, c.ink, c.sticker ?? "", c.number ?? "", c.uploadedImageStyle ?? "", c.layers?.length ?? 0].join("~") : "";
 
 /* ---------- Biến thể ---------- */
 

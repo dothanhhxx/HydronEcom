@@ -45,12 +45,13 @@ function Hero({ products }: { products: Product[] }) {
           <div className="hd-hero-stage">
             <span className="hd-hero-disc" aria-hidden />
             <span className="hd-hero-ring" aria-hidden />
+            <span className="hd-hero-hint" aria-hidden><Icon name="rotate-ccw" size={13} />Kéo để xoay 360°</span>
             <Bottle3D showcase shape={hero.shape} hex={color.hex} size="700" custom={{ text: "MINH ANH", font: "block", ink: color.hex === "#F1EEE8" || color.hex === "#E6D8BF" ? "#0B2A36" : "#FFFFFF", sticker: "giot" }} label={`Bình ${hero.name} màu ${color.name} in tên MINH ANH, xoay 3D`} />
-            <div className="hd-hero-tag" style={{ left: "2%", top: "20%" }}>
+            <div className="hd-hero-tag" style={{ left: "-2%", top: "24%" }}>
               <strong>In tên +{formatVND(CUSTOM_TEXT_FEE)}</strong>
               Tối đa 14 ký tự, 3 kiểu chữ
             </div>
-            <div className="hd-hero-tag" style={{ right: "0%", top: "54%" }}>
+            <div className="hd-hero-tag" style={{ right: "-2%", top: "54%" }}>
               <strong>Thép 304</strong>
               Hai lớp hút chân không
             </div>

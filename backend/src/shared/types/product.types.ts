@@ -25,12 +25,32 @@ export type Shape = "classic" | "sport" | "flip" | "bag" | "strap";
 
 export type FontId = "block" | "round" | "script";
 
-/** Phần khách tự thiết kế: chữ/số in quanh thân bình và một sticker. */
+export type LayerType = "text" | "number" | "sticker" | "image";
+
+export type CustomLayer = {
+  id: string;
+  type: LayerType;
+  content: string; // text string, sticker id, or image data URL
+  font?: FontId;
+  color?: string; // ink color or tint
+  style?: string; // sticker style (cute, bold, minimal, cartoon, anime, pixel, graffiti, sport, vintage, 3d)
+  x?: number; // horizontal placement on bottle circumference [-1 to 1] or [0 to 1], default 0.5 (center)
+  y?: number; // vertical height along cylinder [0 to 1], 0.5 is middle
+  scale?: number; // scale multiplier, default 1
+  rotation?: number; // rotation degrees, default 0
+};
+
+/** Phần khách tự thiết kế: chữ/số in quanh thân bình, sticker và ảnh upload. */
 export type Customization = {
   text: string;
   font: FontId;
   ink: string;
   sticker?: string;
+  number?: string;
+  numberFont?: FontId;
+  uploadedImage?: string;
+  uploadedImageStyle?: string;
+  layers?: CustomLayer[];
 };
 
 export type Product = {
